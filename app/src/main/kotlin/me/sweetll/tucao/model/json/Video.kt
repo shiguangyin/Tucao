@@ -5,27 +5,29 @@ import android.os.Parcelable
 import com.chad.library.adapter.base.entity.IExpandable
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import me.sweetll.tucao.business.download.adapter.DownloadedVideoAdapter
 import me.sweetll.tucao.rxdownload.entity.DownloadStatus
 
+@JsonClass(generateAdapter = true)
 data class Video(val hid: String = "",
-            val title: String = "",
-            val play: Int = 0,
-            val mukio: Int = 0,
-            val create: String = "",
-            val thumb: String = "",
-            val typeid: Int = 0,
-            val typename: String = "",
-            val description: String = "",
-            val userid: String = "",
-            val user: String = "",
-            val keywords: String = "",
-            val part: Int = 0,
-            val flag: Int = DownloadStatus.READY,
-            var downloadSize: Long = 0L,
-            var totalSize: Long = 0L,
-            var checkable: Boolean = false,
-            var checked: Boolean = false) : IExpandable<Part>, MultiItemEntity, Parcelable {
+                 val title: String = "",
+                 @Json(name = "play_count")val play: Int = 0,
+                 val mukio: Int = 0,
+                 val create: String = "",
+                 val thumb: String = "",
+                 val typeid: Int = 0,
+                 val typename: String = "",
+                 val description: String = "",
+                 val userid: String = "",
+                 val user: String = "",
+                 val keywords: String = "",
+                 val part: Int = 0,
+                 val flag: Int = DownloadStatus.READY,
+                 var downloadSize: Long = 0L,
+                 var totalSize: Long = 0L,
+                 var checkable: Boolean = false,
+                 var checked: Boolean = false) : IExpandable<Part>, MultiItemEntity, Parcelable {
 
     var video: MutableList<Part> = mutableListOf()
 
@@ -38,6 +40,7 @@ data class Video(val hid: String = "",
     val singlePart: Boolean
         get() = part == 1
 
+    @Transient
     private var expanded = false
 
     override fun getLevel(): Int = 0

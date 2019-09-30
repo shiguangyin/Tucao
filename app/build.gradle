@@ -3,6 +3,10 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
+def propertiesFile = rootProject.file("local.properties")
+Properties properties = new Properties()
+properties.load(propertiesFile.newDataInputStream())
+def baseUrl = properties.getProperty("BASE_URL")
 android {
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildTools
@@ -21,6 +25,7 @@ android {
         ndk {
             abiFilters 'armeabi-v7a', 'x86'
         }
+        buildConfigField("String","BASE_URL",baseUrl)
     }
     signingConfigs {
         release {
@@ -153,6 +158,7 @@ dependencies {
     implementation('com.github.ozodrukh:CircularReveal:2.0.1@aar') {
         transitive = true
     }
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.8.0")
 }
 
 repositories {

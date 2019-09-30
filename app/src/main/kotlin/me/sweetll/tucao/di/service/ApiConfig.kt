@@ -86,4 +86,7 @@ object ApiConfig {
                 }
     }
 
+
+    const val RECOMMEND = "/api/v1/feed/recommend"
+
 }

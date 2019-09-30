@@ -1,12 +1,17 @@
 package me.sweetll.tucao.business.home.viewmodel
 
+import android.util.Log
 import android.view.View
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import me.sweetll.tucao.base.BaseViewModel
 import me.sweetll.tucao.model.json.Video
 import me.sweetll.tucao.business.home.fragment.RecommendFragment
 import me.sweetll.tucao.business.rank.RankActivity
+import me.sweetll.tucao.extension.result
 import me.sweetll.tucao.extension.sanitizeHtml
 import me.sweetll.tucao.extension.toast
 import me.sweetll.tucao.model.json.Channel
@@ -19,26 +24,41 @@ class RecommendViewModel(val fragment: RecommendFragment): BaseViewModel() {
     val HID_PATTERN = "/play/h([0-9]+)/".toRegex()
     val TID_PATTERN = "/list/([0-9]+)/".toRegex()
 
+    companion object {
+        const val TAG = "RecommendViewModel"
+    }
+
     fun loadData() {
         fragment.setRefreshing(true)
-        rawApiService.index()
-                .bindToLifecycle(fragment)
-                .sanitizeHtml({
-                    val banners = parseBanners(this)
-                    val recommends = parseRecommends(this)
-                    Index(banners, recommends)
-                })
-                .doAfterTerminate { fragment.setRefreshing(false) }
-                .subscribe({
-                    index ->
-                    fragment.loadIndex(index)
-                }, {
-                    error ->
-                    error.printStackTrace()
-                    error.message?.toast()
-                    fragment.loadError()
-                })
+//        rawApiService.index()
+//                .bindToLifecycle(fragment)
+//                .sanitizeHtml({
+//                    val banners = parseBanners(this)
+//                    val recommends = parseRecommends(this)
+//                    Index(banners, recommends)
+//                })
+//                .doAfterTerminate { fragment.setRefreshing(false) }
+//                .subscribe({
+//                    index ->
+//                    fragment.loadIndex(index)
+//                }, {
+//                    error ->
+//                    error.printStackTrace()
+//                    error.message?.toast()
+//                    fragment.loadError()
+//                })
+        newApiService.index().bindToLifecycle(fragment)
+                .subscribeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe {result ->
+                    result.data?.run {
+                        Log.i(TAG, "result = ${this}")
+                    }
+                }
+
     }
+
+
 
     fun onClickRank(view: View) {
         RankActivity.intentTo(fragment.activity!!)
