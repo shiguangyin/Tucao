@@ -30,13 +30,13 @@ import me.sweetll.tucao.model.raw.Banner
 import me.sweetll.tucao.model.raw.Index
 
 class RecommendFragment : BaseFragment() {
-    lateinit var binding: FragmentRecommendBinding
-    lateinit var headerView: View
-    val viewModel = RecommendViewModel(this)
+    private lateinit var binding: FragmentRecommendBinding
+    private lateinit var headerView: ConvenientBanner<Banner>
+    private val viewModel = RecommendViewModel(this)
 
-    val recommendAdapter = RecommendAdapter(null)
+    private val recommendAdapter = RecommendAdapter(null)
 
-    var isLoad = false
+    private var isLoad = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_recommend, container, false)
@@ -67,7 +67,8 @@ class RecommendFragment : BaseFragment() {
     }
 
     fun setupRecyclerView() {
-        headerView = LayoutInflater.from(activity).inflate(R.layout.header_banner, binding.root as ViewGroup, false)
+        headerView = LayoutInflater.from(activity)
+            .inflate(R.layout.header_banner, binding.root as ViewGroup, false) as ConvenientBanner<Banner>
         recommendAdapter.addHeaderView(headerView)
 
         binding.recommendRecycler.layoutManager = LinearLayoutManager(activity)
@@ -118,7 +119,7 @@ class RecommendFragment : BaseFragment() {
         loadWhenNeed()
     }
 
-    fun loadWhenNeed() {
+    private fun loadWhenNeed() {
         if (isVisible && userVisibleHint && !isLoad && !binding.swipeRefresh.isRefreshing) {
             viewModel.loadData()
         }
@@ -136,7 +137,7 @@ class RecommendFragment : BaseFragment() {
             binding.recommendRecycler.visibility = View.VISIBLE
         }
 
-        (headerView as ConvenientBanner<Banner>).setPages({ BannerHolder() }, index.banners)
+        headerView.setPages({ BannerHolder() }, index.banners)
                 .setPageIndicator(intArrayOf(R.drawable.indicator_white_circle, R.drawable.indicator_pink_circle))
                 .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
                 .startTurning(3000)

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 def propertiesFile = rootProject.file("local.properties")
 Properties properties = new Properties()
@@ -11,7 +11,7 @@ android {
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildTools
     defaultConfig {
-        applicationId 'me.sweetll.tucao'
+        applicationId 'me.sweetll.tucao.new'
         minSdkVersion 19
         targetSdkVersion versions.targetSdk
         versionCode 118

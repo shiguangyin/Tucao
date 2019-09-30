@@ -43,10 +43,11 @@ class RecommendViewModel(val fragment: RecommendFragment) : BaseViewModel() {
 //                })
         newApiService.index().bindToLifecycle(fragment)
             .apiResult()
+            .doAfterTerminate { fragment.setRefreshing(false) }
             .subscribe({ result ->
                 val channels = ArrayList<Pair<Channel, List<Video>>>()
-                result.channels.forEach { channel ->
-                    val c = Channel(id = 0, name = channel.name)
+                for ((index, channel) in result.channels.withIndex()) {
+                    val c = Channel(id = index, name = channel.name)
                     channels.add(Pair(c, channel.videos))
                 }
                 fragment.loadIndex(Index(result.banners, channels))
