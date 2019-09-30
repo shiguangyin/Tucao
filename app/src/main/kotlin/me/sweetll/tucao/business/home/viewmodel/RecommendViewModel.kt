@@ -1,26 +1,20 @@
 package me.sweetll.tucao.business.home.viewmodel
 
-import android.util.Log
 import android.view.View
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import me.sweetll.tucao.base.BaseViewModel
-import me.sweetll.tucao.model.json.Video
 import me.sweetll.tucao.business.home.fragment.RecommendFragment
 import me.sweetll.tucao.business.rank.RankActivity
-import me.sweetll.tucao.extension.result
-import me.sweetll.tucao.extension.sanitizeHtml
+import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.toast
 import me.sweetll.tucao.model.json.Channel
+import me.sweetll.tucao.model.json.Video
 import me.sweetll.tucao.model.raw.Banner
 import me.sweetll.tucao.model.raw.Index
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
-class RecommendViewModel(val fragment: RecommendFragment): BaseViewModel() {
+class RecommendViewModel(val fragment: RecommendFragment) : BaseViewModel() {
     val HID_PATTERN = "/play/h([0-9]+)/".toRegex()
     val TID_PATTERN = "/list/([0-9]+)/".toRegex()
 
@@ -48,16 +42,21 @@ class RecommendViewModel(val fragment: RecommendFragment): BaseViewModel() {
 //                    fragment.loadError()
 //                })
         newApiService.index().bindToLifecycle(fragment)
-                .subscribeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe {result ->
-                    result.data?.run {
-                        Log.i(TAG, "result = ${this}")
-                    }
+            .apiResult()
+            .subscribe({ result ->
+                val channels = ArrayList<Pair<Channel, List<Video>>>()
+                result.channels.forEach { channel ->
+                    val c = Channel(id = 0, name = channel.name)
+                    channels.add(Pair(c, channel.videos))
                 }
+                fragment.loadIndex(Index(result.banners, channels))
+            }, { error ->
+                error.printStackTrace()
+                error.message?.toast()
+                fragment.loadError()
+            })
 
     }
-
 
 
     fun onClickRank(view: View) {
@@ -88,8 +87,7 @@ class RecommendViewModel(val fragment: RecommendFragment): BaseViewModel() {
         val lists_tip = doc.select("div.lists.tip").takeLast(5)
         val titleZipLists = title_red zip lists_tip
 
-        val recommends = titleZipLists.fold(mutableListOf<Pair<Channel, List<Video>>>()) {
-            total, zipElement ->
+        val recommends = titleZipLists.fold(mutableListOf<Pair<Channel, List<Video>>>()) { total, zipElement ->
             // Parse Channel
             val aChannelElement = zipElement.first.child(1)
             val channelLinkUrl = aChannelElement.attr("href")
@@ -102,8 +100,7 @@ class RecommendViewModel(val fragment: RecommendFragment): BaseViewModel() {
                 it is Element
             }.map {
                 it.child(0)
-            }.fold(mutableListOf<Video>()) {
-                total, aElement ->
+            }.fold(mutableListOf<Video>()) { total, aElement ->
                 // a
                 val linkUrl = aElement.attr("href")
                 val hid: String = HID_PATTERN.find(linkUrl)!!.groupValues[1]
@@ -127,8 +124,7 @@ class RecommendViewModel(val fragment: RecommendFragment): BaseViewModel() {
             it is Element
         }.map {
             it.child(0)
-        }.fold(mutableListOf<Video>()) {
-            total, aElement ->
+        }.fold(mutableListOf<Video>()) { total, aElement ->
             // a
             val linkUrl = aElement.attr("href")
             val hid: String = HID_PATTERN.find(linkUrl)!!.groupValues[1]

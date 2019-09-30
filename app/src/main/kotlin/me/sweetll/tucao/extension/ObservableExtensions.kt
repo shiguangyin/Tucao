@@ -45,7 +45,7 @@ fun <T> Observable<ResponseBody>.sanitizeHtml(transform: Document.() ->  T): Obs
         }
         .observeOn(AndroidSchedulers.mainThread())
 
-fun <T> Observable<NewBaseResp<T>>.result(): Observable<T> = this
+fun <T> Observable<NewBaseResp<T>>.apiResult(): Observable<T> = this
         .subscribeOn(Schedulers.io())
         .flatMap {resp ->
             if (resp.data != null) {
@@ -54,4 +54,5 @@ fun <T> Observable<NewBaseResp<T>>.result(): Observable<T> = this
                 Observable.error(Throwable(resp.msg))
             }
         }
-        .subscribeOn(AndroidSchedulers.mainThread())
+        .observeOn(AndroidSchedulers.mainThread())
+
