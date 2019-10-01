@@ -43,7 +43,7 @@ class VideoInfoViewModel(val videoInfoFragment: VideoInfoFragment): BaseViewMode
         this.isStar.set(checkStar(video))
 
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
-        this.create.set("发布于${sdf.format(Date(video.create.toLong() * 1000))}")
+        this.create.set("发布于${sdf.format(Date(video.createTime * 1000))}")
 
         // 获取头像
         rawApiService.user(video.userid)

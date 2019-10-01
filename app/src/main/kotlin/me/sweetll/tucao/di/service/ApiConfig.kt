@@ -25,9 +25,9 @@ object ApiConfig {
     /*
      * Drrr
      */
-    const val CREATE_POST_API_URL = "http://45.63.54.11:13450/comment/create"
+    const val CREATE_POST_API_URL = "http://45.63.54.11:13450/comment/createTime"
     const val POSTS_API_URL = "http://45.63.54.11:13450/comments"
-    const val CREATE_REPLY_API_URL = "http://45.63.54.11:13450/reply/create/{commentId}"
+    const val CREATE_REPLY_API_URL = "http://45.63.54.11:13450/reply/createTime/{commentId}"
     const val REPLIES_API_URL = "http://45.63.54.11:13450/replies/{commentId}"
     const val CREATE_VOTE_API_URL = "http://45.63.54.11:13450/vote/{commentId}"
 
@@ -88,5 +88,6 @@ object ApiConfig {
 
 
     const val RECOMMEND = "/api/v1/feed/recommend"
+    const val VIDEO_DETAIL = "api/v1/video/{id}"
 
 }

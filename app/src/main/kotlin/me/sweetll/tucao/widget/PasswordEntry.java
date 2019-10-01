@@ -89,7 +89,7 @@ public class PasswordEntry extends TextInputEditText {
 
     private void passwordVisibilityToggled(boolean isMasked, CharSequence password) {
         if (maskDrawable == null) {
-            // lazily create the drawable that morphs the dots
+            // lazily createTime the drawable that morphs the dots
             if (!ViewCompat.isLaidOut(this) || getText().length() < 1) return;
             maskDrawable = new MaskMorphDrawable(getContext(), getPaint(), getBaseline(),
                     getLayout().getPrimaryHorizontal(1), getTextLeft());

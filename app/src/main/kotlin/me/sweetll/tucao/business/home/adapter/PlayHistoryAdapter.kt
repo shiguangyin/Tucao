@@ -10,7 +10,7 @@ import me.sweetll.tucao.extension.load
 class PlayHistoryAdapter(data: MutableList<Video>?): BaseItemDraggableAdapter<Video, BaseViewHolder>(R.layout.item_play_history, data) {
     override fun convert(helper: BaseViewHolder, item: Video) {
         helper.setText(R.id.text_title, item.title)
-        helper.setText(R.id.text_creat, item.create)
+        helper.setText(R.id.text_creat, "${item.createTime}")
 
         val thumbImg = helper.getView<ImageView>(R.id.img_thumb)
         thumbImg.load(mContext, item.thumb)

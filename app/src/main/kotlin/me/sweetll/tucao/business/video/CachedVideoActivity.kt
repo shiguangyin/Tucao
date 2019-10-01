@@ -169,7 +169,7 @@ class CachedVideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
 
     override fun onSavePlayHistory(position: Int) {
         HistoryHelpers.savePlayHistory(
-        video.copy(create = DateFormat.format("yyyy-MM-dd hh:mm:ss", Date()).toString())
+        video.copy(createTime = Date().time)
                 .also {
                     it.parts = video.parts.filter {
                         it.vid == selectedPart.vid

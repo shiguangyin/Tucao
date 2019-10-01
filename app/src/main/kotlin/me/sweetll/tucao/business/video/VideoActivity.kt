@@ -13,7 +13,6 @@ import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.support.design.widget.AppBarLayout
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.support.v7.widget.Toolbar
@@ -68,6 +67,7 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
         private val ARG_VIDEO = "video"
         private val ARG_HID = "hid"
         private val ARG_COVER = "cover"
+        private val ARG_ID = "id"
 
         fun intentTo(context: Context, video: Video) {
             val intent = Intent(context, VideoActivity::class.java)
@@ -88,9 +88,21 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
             context.startActivity(intent)
         }
 
+        fun intentTo(context: Context, id: Int) {
+            val intent = Intent(context, VideoActivity::class.java)
+            intent.putExtra(ARG_ID, id)
+            context.startActivity(intent)
+        }
+
         fun intentTo(context: Context, hid: String, cover: String, bundle: Bundle?) {
             val intent = Intent(context, VideoActivity::class.java)
             intent.putExtra(ARG_HID, hid)
+            intent.putExtra(ARG_COVER, cover)
+            context.startActivity(intent, bundle)
+        }
+        fun intentTo(context: Context, id: Int, cover: String, bundle: Bundle?) {
+            val intent = Intent(context, VideoActivity::class.java)
+            intent.putExtra(ARG_ID, id)
             intent.putExtra(ARG_COVER, cover)
             context.startActivity(intent, bundle)
         }
@@ -100,6 +112,7 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_video)
         val hid = intent.getStringExtra(ARG_HID)
         val cover = intent.getStringExtra(ARG_COVER)
+        val id = intent.getIntExtra(ARG_ID, 0)
 
         videoPagerAdapter = VideoPagerAdapter(supportFragmentManager)
         binding.viewPager.adapter = videoPagerAdapter
@@ -109,6 +122,9 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
         if (hid != null) {
             viewModel = VideoViewModel(this)
             viewModel.queryVideo(hid)
+        } else if (id != 0) {
+            viewModel = VideoViewModel(this)
+            viewModel.queryVideo(id)
         } else {
             val video: Video = intent.getParcelableExtra(ARG_VIDEO)
             viewModel = VideoViewModel(this, video)
@@ -394,7 +410,7 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
 
     override fun onSavePlayHistory(position: Int) {
         HistoryHelpers.savePlayHistory(
-                video.copy(create = DateFormat.format("yyyy-MM-dd hh:mm:ss", Date()).toString())
+                video.copy(createTime = Date().time)
                         .also {
                             it.parts = video.parts.filter {
                                 it.vid == selectedPart.vid

@@ -161,7 +161,7 @@ public abstract class Indicator extends Drawable implements Animatable {
 
     /**
      * Your should use this to add AnimatorUpdateListener when
-     * create animator , otherwise , animator doesn't work when
+     * createTime animator , otherwise , animator doesn't work when
      * the animation restart .
      *
      * @param updateListener

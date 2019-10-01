@@ -26,28 +26,28 @@ class RecommendAdapter(data: MutableList<Pair<Channel, List<Video>>>?): BaseQuic
                     thumbImg = helper.getView(R.id.img_thumb1)
                     playText = helper.getView(R.id.text_play1)
                     titleText = helper.getView(R.id.text_title1)
-                    helper.setTag(R.id.card1, result.hid)
+                    helper.setTag(R.id.card1, result.id)
                     helper.addOnClickListener(R.id.card1)
                 }
                 1 -> {
                     thumbImg = helper.getView(R.id.img_thumb2)
                     playText = helper.getView(R.id.text_play2)
                     titleText = helper.getView(R.id.text_title2)
-                    helper.setTag(R.id.card2, result.hid)
+                    helper.setTag(R.id.card2, result.id)
                     helper.addOnClickListener(R.id.card2)
                 }
                 2 -> {
                     thumbImg = helper.getView(R.id.img_thumb3)
                     playText = helper.getView(R.id.text_play3)
                     titleText = helper.getView(R.id.text_title3)
-                    helper.setTag(R.id.card3, result.hid)
+                    helper.setTag(R.id.card3, result.id)
                     helper.addOnClickListener(R.id.card3)
                 }
                 else -> {
                     thumbImg = helper.getView(R.id.img_thumb4)
                     playText = helper.getView(R.id.text_play4)
                     titleText = helper.getView(R.id.text_title4)
-                    helper.setTag(R.id.card4, result.hid)
+                    helper.setTag(R.id.card4, result.id)
                     helper.addOnClickListener(R.id.card4)
                 }
             }

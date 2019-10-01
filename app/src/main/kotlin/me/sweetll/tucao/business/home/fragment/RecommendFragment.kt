@@ -93,9 +93,9 @@ class RecommendFragment : BaseFragment() {
                             val cover = titleText.tag as String
                             val options = ActivityOptionsCompat
                                     .makeSceneTransitionAnimation(activity!!, p1, p2)
-                            VideoActivity.intentTo(activity!!, view.tag as String, cover, options.toBundle())
+                            VideoActivity.intentTo(activity!!, view.tag as Int, cover, options.toBundle())
                         } else {
-                            VideoActivity.intentTo(activity!!, view.tag as String)
+                            VideoActivity.intentTo(activity!!, view.tag as Int)
                         }
                     }
                 }

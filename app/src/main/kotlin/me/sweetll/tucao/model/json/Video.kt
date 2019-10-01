@@ -10,11 +10,12 @@ import me.sweetll.tucao.business.download.adapter.DownloadedVideoAdapter
 import me.sweetll.tucao.rxdownload.entity.DownloadStatus
 
 @JsonClass(generateAdapter = true)
-data class Video(val hid: String = "",
+data class Video(val id: Int= 0,
+                 val hid: String = "",
                  val title: String = "",
                  @Json(name = "play_count")val play: Int = 0,
                  val mukio: Int = 0,
-                 val create: String = "",
+                 val createTime: Long = 0,
                  val thumb: String = "",
                  val typeid: Int = 0,
                  val typename: String = "",
@@ -56,11 +57,12 @@ data class Video(val hid: String = "",
     override fun isExpanded(): Boolean = expanded
 
     constructor(source: Parcel) : this(
+            source.readInt(),
             source.readString(),
             source.readString(),
             source.readInt(),
             source.readInt(),
-            source.readString(),
+            source.readLong(),
             source.readString(),
             source.readInt(),
             source.readString(),
@@ -81,11 +83,12 @@ data class Video(val hid: String = "",
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
+        writeInt(id)
         writeString(hid)
         writeString(title)
         writeInt(play)
         writeInt(mukio)
-        writeString(create)
+        writeLong(createTime)
         writeString(thumb)
         writeInt(typeid)
         writeString(typename)
