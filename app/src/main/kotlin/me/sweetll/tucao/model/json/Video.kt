@@ -10,18 +10,19 @@ import me.sweetll.tucao.business.download.adapter.DownloadedVideoAdapter
 import me.sweetll.tucao.rxdownload.entity.DownloadStatus
 
 @JsonClass(generateAdapter = true)
-data class Video(val id: Int= 0,
+data class Video(val id: Int = 0,
                  val hid: String = "",
                  val title: String = "",
-                 @Json(name = "play_count")val play: Int = 0,
+                 @Json(name = "play_count") val play: Int = 0,
                  val mukio: Int = 0,
-                 val createTime: Long = 0,
+                 @Json(name = "create_time") val createTime: Long = 0,
                  val thumb: String = "",
                  val typeid: Int = 0,
                  val typename: String = "",
                  val description: String = "",
-                 val userid: String = "",
-                 val user: String = "",
+                 @Json(name = "user_id") val userid: String = "",
+                 @Json(name = "user_name") val user: String = "",
+                 @Json(name = "user_avatar") val userAvatar: String = "",
                  val keywords: String = "",
                  val part: Int = 0,
                  val flag: Int = DownloadStatus.READY,
@@ -57,25 +58,26 @@ data class Video(val id: Int= 0,
     override fun isExpanded(): Boolean = expanded
 
     constructor(source: Parcel) : this(
-            source.readInt(),
-            source.readString(),
-            source.readString(),
-            source.readInt(),
-            source.readInt(),
-            source.readLong(),
-            source.readString(),
-            source.readInt(),
-            source.readString(),
-            source.readString(),
-            source.readString(),
-            source.readString(),
-            source.readString(),
-            source.readInt(),
-            source.readInt(),
-            source.readLong(),
-            source.readLong(),
-            1 == source.readInt(),
-            1 == source.readInt()
+        source.readInt(),
+        source.readString(),
+        source.readString(),
+        source.readInt(),
+        source.readInt(),
+        source.readLong(),
+        source.readString(),
+        source.readInt(),
+        source.readString(),
+        source.readString(),
+        source.readString(),
+        source.readString(),
+        source.readString(),
+        source.readString(),
+        source.readInt(),
+        source.readInt(),
+        source.readLong(),
+        source.readLong(),
+        1 == source.readInt(),
+        1 == source.readInt()
     ) {
         video = source.createTypedArrayList(Part.CREATOR)
     }
@@ -95,6 +97,7 @@ data class Video(val id: Int= 0,
         writeString(description)
         writeString(userid)
         writeString(user)
+        writeString(userAvatar)
         writeString(keywords)
         writeInt(part)
         writeInt(flag)
@@ -106,7 +109,8 @@ data class Video(val id: Int= 0,
     }
 
     companion object {
-        @JvmField val CREATOR: Parcelable.Creator<Video> = object : Parcelable.Creator<Video> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<Video> = object : Parcelable.Creator<Video> {
             override fun createFromParcel(source: Parcel): Video = Video(source)
             override fun newArray(size: Int): Array<Video?> = arrayOfNulls(size)
         }

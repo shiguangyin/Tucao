@@ -75,8 +75,6 @@ interface RawApiService {
     @GET(ApiConfig.PERSONAL_URL)
     fun personal(): Observable<ResponseBody>
 
-    @GET(ApiConfig.USER_URL)
-    fun user(@Path("userid") userid: String): Observable<ResponseBody>
 
     @GET(ApiConfig.SPACE_URL)
     fun space(@Query("uid") uid: String,

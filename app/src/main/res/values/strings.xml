@@ -1,5 +1,10 @@
-<resources>
-    <string name="app_name">吐槽New</string>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="app_name" >吐槽New</string>
     <string name="drawer_open">打开抽屉式导航栏</string>
     <string name="drawer_close">关闭抽屉式导航栏</string>
+    <string name="play_count">播放：</string>
+    <string name="danmaku_count">弹幕：</string>
+    <string name="star">收藏</string>
+    <string name="stared">已收藏</string>
+    <string name="video_parts">分集</string>
 </resources>

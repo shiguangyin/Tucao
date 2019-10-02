@@ -44,19 +44,7 @@ class VideoInfoViewModel(val videoInfoFragment: VideoInfoFragment): BaseViewMode
 
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
         this.create.set("发布于${sdf.format(Date(video.createTime * 1000))}")
-
-        // 获取头像
-        rawApiService.user(video.userid)
-                .bindToLifecycle(videoInfoFragment)
-                .sanitizeHtml {
-                    parseAvatar(this)
-                }
-                .subscribe({
-                    avatar.set(it)
-                }, {
-                    error ->
-                    error.printStackTrace()
-                })
+        avatar.set(video.userAvatar)
     }
 
     fun checkStar(video: Video): Boolean = HistoryHelpers.loadStar()

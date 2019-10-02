@@ -41,7 +41,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text='@{"播放：" + viewModel.video.play}'
+                    android:text='@{@string/play_count + viewModel.video.play}'
                     android:textColor="@color/secondary_text"
                     android:textSize="12sp"
                     tools:text="播放：14.6万" />
@@ -50,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
-                    android:text='@{"弹幕：" + viewModel.video.mukio}'
+                    android:text='@{@string/danmaku_count + viewModel.video.mukio}'
                     android:textColor="@color/secondary_text"
                     android:textSize="12sp"
                     tools:text="弹幕：501" />
@@ -96,7 +96,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text='@{viewModel.isStar ? "已收藏" : "收藏"}'
+                        android:text='@{viewModel.isStar ? @string/stared : @string/star}'
                         android:textColor="@color/pink_500"
                         android:textSize="12sp"
                         tools:text="收藏" />
@@ -206,7 +206,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text='@{"分集(" + viewModel.video.parts.size() + ")"}'
+                android:text='@{@string/video_parts + "(" + viewModel.video.parts.size() + ")"}'
                 tools:text="分集(2)" />
 
             <android.support.v7.widget.RecyclerView
