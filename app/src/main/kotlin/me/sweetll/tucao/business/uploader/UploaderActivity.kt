@@ -255,14 +255,14 @@ class UploaderActivity : BaseActivity() {
         return circularReveal
     }
 
-    fun loadData(data: MutableList<Video>) {
+    fun loadData(data: List<Video>) {
         videoAdapter.setNewData(data)
         if (data.size < viewModel.pageSize) {
             videoAdapter.setEnableLoadMore(false)
         }
     }
 
-    fun loadMoreData(data: MutableList<Video>?, flag: Int) {
+    fun loadMoreData(data: List<Video>?, flag: Int) {
         when (flag) {
             Const.LOAD_MORE_COMPLETE -> {
                 videoAdapter.addData(data!!)

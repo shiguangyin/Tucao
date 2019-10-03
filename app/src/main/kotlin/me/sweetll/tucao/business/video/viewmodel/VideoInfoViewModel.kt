@@ -135,13 +135,19 @@ class VideoInfoViewModel(val videoInfoFragment: VideoInfoFragment): BaseViewMode
     }
 
     fun onClickUser(view: View) {
-        if (headerBg.isNotEmpty()) {
-            val options: Bundle? = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    videoInfoFragment.activity!!,
-                    android.support.v4.util.Pair.create(view.findViewById(R.id.avatarImg),  "transition_avatar")
+//        if (headerBg.isNotEmpty()) {
+//            val options: Bundle? = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                    videoInfoFragment.activity!!,
+//                    android.support.v4.util.Pair.create(view.findViewById(R.id.avatarImg),  "transition_avatar")
+//            ).toBundle()
+//            UploaderActivity.intentTo(videoInfoFragment.activity!!, video.get()!!.userid, video.get()!!.user, avatar.get(), signature, headerBg, options)
+//        }
+        val video = video.get() ?: return
+        val activity = videoInfoFragment.activity ?: return
+        val options: Bundle? = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    activity, android.support.v4.util.Pair.create(view.findViewById(R.id.avatarImg),  "transition_avatar")
             ).toBundle()
-            UploaderActivity.intentTo(videoInfoFragment.activity!!, video.get()!!.userid, video.get()!!.user, avatar.get(), signature, headerBg, options)
-        }
+        UploaderActivity.intentTo(activity, video.userid, video.user, video.userAvatar, video.userBio, video.userBgImage, options)
     }
 
     private fun parseAvatar(doc: Document): String {

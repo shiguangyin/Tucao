@@ -23,6 +23,8 @@ data class Video(val id: Int = 0,
                  @Json(name = "user_id") val userid: String = "",
                  @Json(name = "user_name") val user: String = "",
                  @Json(name = "user_avatar") val userAvatar: String = "",
+                 @Json(name = "user_bg_image") val userBgImage: String = "",
+                 @Json(name = "user_bio") val userBio: String = "",
                  val keywords: String = "",
                  val part: Int = 0,
                  val flag: Int = DownloadStatus.READY,
@@ -72,6 +74,8 @@ data class Video(val id: Int = 0,
         source.readString(),
         source.readString(),
         source.readString(),
+        source.readString(),
+        source.readString(),
         source.readInt(),
         source.readInt(),
         source.readLong(),
@@ -98,6 +102,8 @@ data class Video(val id: Int = 0,
         writeString(userid)
         writeString(user)
         writeString(userAvatar)
+        writeString(userBgImage)
+        writeString(userBio)
         writeString(keywords)
         writeInt(part)
         writeInt(flag)
