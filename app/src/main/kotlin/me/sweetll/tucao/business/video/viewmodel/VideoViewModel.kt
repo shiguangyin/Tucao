@@ -11,7 +11,6 @@ import me.sweetll.tucao.base.BaseViewModel
 import me.sweetll.tucao.model.json.Part
 import me.sweetll.tucao.model.json.Video
 import me.sweetll.tucao.business.video.VideoActivity
-import me.sweetll.tucao.di.service.ApiConfig
 import me.sweetll.tucao.extension.*
 import me.sweetll.tucao.model.xml.Durl
 import me.sweetll.tucao.rxdownload.entity.DownloadStatus
@@ -60,7 +59,7 @@ class VideoViewModel(val activity: VideoActivity) : BaseViewModel() {
     }
 
 
-    fun queryPlayUrls(hid: String, part: Part) {
+    fun queryPlayUrls(videoId: Int, hid: String, part: Part) {
         if (playUrlDisposable != null && !playUrlDisposable!!.isDisposed) {
             playUrlDisposable!!.dispose()
         }
@@ -119,23 +118,22 @@ class VideoViewModel(val activity: VideoActivity) : BaseViewModel() {
                 })
         }
 
-        currentPlayerId = ApiConfig.generatePlayerId(hid, part.order)
-        danmuDisposable = rawApiService.danmu(currentPlayerId!!, System.currentTimeMillis() / 1000)
+        danmuDisposable = newApiService.videoDanmaku(videoId, part.order)
             .bindToLifecycle(activity)
             .subscribeOn(Schedulers.io())
-            .map({ responseBody ->
-                val outputFile = File.createTempFile("tucao", ".xml", AppApplication.get().cacheDir)
+            .map {responseBody ->
+                val outputFile = File.createTempFile("temp_danmaku", ".json", AppApplication.get().cacheDir)
                 val outputStream = FileOutputStream(outputFile)
 
                 outputStream.write(responseBody.bytes())
                 outputStream.flush()
                 outputStream.close()
                 outputFile.absolutePath
-            })
+            }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ uri ->
-                activity.loadDanmuUri(uri)
-            }, { error ->
+                activity.loadDanmaku(uri)
+            },{error ->
                 error.printStackTrace()
                 activity.binding.player.loadText?.let {
                     it.text = it.text.replace("全舰弹幕装填...".toRegex(), "全舰弹幕装填...[失败]")

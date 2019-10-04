@@ -348,9 +348,10 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
         }
     }
 
-    fun loadDanmuUri(uri: String) {
+    fun loadDanmaku(uri: String) {
         binding.player.setUpDanmu(uri)
     }
+
 
     fun selectPart(selectedPart: Part) {
         isPlay = false
@@ -362,7 +363,7 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
             it.text = "播放器初始化...[完成]\n获取视频信息...[完成]\n解析视频地址...\n全舰弹幕装填..."
         }
         if (selectedPart.vid.isNotEmpty()) {
-            viewModel.queryPlayUrls(video.hid, selectedPart)
+            viewModel.queryPlayUrls(video.id, video.hid, selectedPart)
         } else {
             "所选视频已失效".toast()
         }

@@ -43,6 +43,7 @@ import me.sweetll.tucao.extension.dp2px
 import me.sweetll.tucao.extension.formatDanmuOpacityToFloat
 import me.sweetll.tucao.extension.formatDanmuSizeToFloat
 import me.sweetll.tucao.extension.formatDanmuSpeedToFloat
+import me.sweetll.tucao.util.NewDanmakuParser
 
 class DanmuVideoPlayer : PreviewGSYVideoPlayer {
     var loadText: TextView? = null
@@ -439,7 +440,12 @@ class DanmuVideoPlayer : PreviewGSYVideoPlayer {
         } catch (e: IllegalDataException) {
             e.printStackTrace()
         }
-        val parser = TucaoDanmukuParser()
+        val parser = if (uri.endsWith(".json", true)) {
+            NewDanmakuParser()
+        } else {
+            TucaoDanmukuParser()
+        }
+
         val dataSource = loader.dataSource
         parser.load(dataSource)
         return parser

@@ -149,21 +149,4 @@ class VideoInfoViewModel(val videoInfoFragment: VideoInfoFragment): BaseViewMode
             ).toBundle()
         UploaderActivity.intentTo(activity, video.userid, video.user, video.userAvatar, video.userBio, video.userBgImage, options)
     }
-
-    private fun parseAvatar(doc: Document): String {
-        val header_div = doc.select("div.header")[0]
-        val style = header_div.child(0).attr("style")
-        headerBg = style.substring(style.indexOf("http://"), style.indexOf(")"))
-
-        val userinfo_div = doc.select("div.userinfo").getOrNull(0)
-        userinfo_div?.let {
-            val lis = userinfo_div.child(0)
-            val signature_li = lis.children().last()
-            signature = signature_li.text().substring(5)
-        }
-
-        val avatar_div = doc.select("div.avatar")[0]
-        return avatar_div.child(0).child(0).attr("src")
-    }
-
 }
