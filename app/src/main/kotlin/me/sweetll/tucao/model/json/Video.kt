@@ -14,7 +14,7 @@ data class Video(val id: Int = 0,
                  val hid: String = "",
                  val title: String = "",
                  @Json(name = "play_count") val play: Int = 0,
-                 val mukio: Int = 0,
+                 @Json(name = "danmaku_count")val danmakuCount: Int = 0,
                  @Json(name = "create_time") val createTime: Long = 0,
                  val thumb: String = "",
                  val typeid: Int = 0,
@@ -93,7 +93,7 @@ data class Video(val id: Int = 0,
         writeString(hid)
         writeString(title)
         writeInt(play)
-        writeInt(mukio)
+        writeInt(danmakuCount)
         writeLong(createTime)
         writeString(thumb)
         writeInt(typeid)

@@ -35,7 +35,7 @@ object ApiConfig {
      * XML
      */
     const val PLAY_URL_API_URL = "http://api.tucao.one/api/playurl"
-    const val DANMU_API_URL = "http://www.tucao.one/index.php?m=mukio&c=index&a=init"
+    const val DANMU_API_URL = "http://www.tucao.one/index.php?m=danmakuCount&c=index&a=init"
 
     /*
      * Raw
@@ -43,7 +43,7 @@ object ApiConfig {
     const val INDEX_URL        = "/"
     const val LIST_URL         = "list/{tid}/"
     const val BGM_URL          = "bgm/{year}/{month}/"
-    const val SEND_DANMU_URL   = "index.php?m=mukio&c=index&a=post"
+    const val SEND_DANMU_URL   = "index.php?m=danmakuCount&c=index&a=post"
     const val COMMENT_URL      = "index.php?m=comment&c=index&a=init&hot=0&iframe=1"
     const val SEND_COMMENT_URL = "index.php?m=comment&c=index&a=post"
     const val READ_MESSAGE_LIST_URL = "index.php?m=message&c=index&a=inbox"

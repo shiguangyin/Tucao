@@ -12,7 +12,7 @@ class StarAdapter(data: MutableList<Video>?): BaseItemDraggableAdapter<Video, Ba
     override fun convert(helper: BaseViewHolder, item: Video) {
         helper.setText(R.id.text_title, item.title)
         helper.setText(R.id.text_play, item.play.formatByWan())
-        helper.setText(R.id.text_mukio, item.mukio.formatByWan())
+        helper.setText(R.id.text_mukio, item.danmakuCount.formatByWan())
 
         val thumbImg = helper.getView<ImageView>(R.id.img_thumb)
         thumbImg.load(mContext, item.thumb)

@@ -14,7 +14,7 @@ class VideoAdapter(data: MutableList<Video>?): BaseQuickAdapter<Video, BaseViewH
         helper.setText(R.id.text_title, video.title)
         helper.setText(R.id.text_user, "up：${video.user}")
         helper.setText(R.id.text_play, "播放：${video.play.formatByWan()}")
-        helper.setText(R.id.text_mukio, "弹幕：${video.mukio.formatByWan()}")
+        helper.setText(R.id.text_mukio, "弹幕：${video.danmakuCount.formatByWan()}")
 
         helper.setTag(R.id.text_title, video.thumb)
         val thumbImg: ImageView = helper.getView<ImageView>(R.id.img_thumb)

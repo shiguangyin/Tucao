@@ -175,7 +175,7 @@ class SearchViewModel(val activity: SearchActivity, keyword: String? = null, var
         })
         orderFilterText.set(when(order) {
             "date" -> "发布时间"
-            "mukio" -> "弹幕数"
+            "danmakuCount" -> "弹幕数"
             else -> "播放数"
         })
     }
