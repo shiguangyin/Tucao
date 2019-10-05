@@ -24,7 +24,7 @@ class CommentAdapter(data: MutableList<Comment>?) : BaseQuickAdapter<Comment, Ba
         helper.setText(R.id.text_nickname, comment.nickname)
         helper.setText(R.id.text_lch, comment.lch)
         helper.setText(R.id.text_time, RelativeDateFormat.format(comment.time))
-        helper.setText(R.id.text_thumb_up, "${comment.thumbUp}")
+        helper.setText(R.id.text_thumb_up, "${comment.likes}")
         helper.setText(R.id.text_info, comment.info)
         helper.setText(R.id.text_reply_num, "${comment.replyNum}")
         helper.addOnClickListener(R.id.linear_thumb_up)

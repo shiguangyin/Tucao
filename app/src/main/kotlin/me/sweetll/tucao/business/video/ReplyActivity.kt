@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.app.SharedElementCallback
 import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
@@ -25,7 +24,6 @@ import android.transition.Transition
 import android.view.View
 import android.view.ViewAnimationUtils
 import com.jakewharton.rxbinding2.widget.RxTextView
-import me.sweetll.tucao.AppApplication
 import me.sweetll.tucao.Const
 
 import me.sweetll.tucao.R
@@ -36,7 +34,6 @@ import me.sweetll.tucao.business.video.model.Comment
 import me.sweetll.tucao.business.video.model.Reply
 import me.sweetll.tucao.business.video.viewmodel.ReplyViewModel
 import me.sweetll.tucao.databinding.ActivityReplyBinding
-import me.sweetll.tucao.di.service.RawApiService
 import me.sweetll.tucao.extension.load
 import me.sweetll.tucao.transition.FabTransform
 import me.sweetll.tucao.transition.TransitionListenerAdapter
@@ -72,7 +69,7 @@ class ReplyActivity : BaseActivity() {
         commentId = intent.getStringExtra(ARG_COMMENT_ID)
         comment = intent.getParcelableExtra(ARG_COMMENT)
 
-        viewModel = ReplyViewModel(this, commentId, comment.id)
+        viewModel = ReplyViewModel(this, commentId, comment.id.toString())
         binding = DataBindingUtil.setContentView(this, R.layout.activity_reply)
         binding.viewModel = viewModel
 
@@ -81,16 +78,16 @@ class ReplyActivity : BaseActivity() {
         binding.textNickname.text = comment.nickname
         binding.textLch.text = comment.lch
         binding.textTime.text = RelativeDateFormat.format(comment.time)
-        binding.textThumbUp.text = "${comment.thumbUp}"
+        binding.textThumbUp.text = "${comment.likes}"
         binding.textInfo.text = comment.info
         binding.textReplyNum.text = "${comment.replyNum}"
         binding.textReplyNumDivider.text = "共${comment.replyNum}条回复"
         binding.linearThumbUp.setOnClickListener {
-            comment.thumbUp += 1
+            comment.likes += 1
             comment.support = true
-            binding.textThumbUp.text = "${comment.thumbUp}"
+            binding.textThumbUp.text = "${comment.likes}"
             binding.imgThumbUp.setColorFilter(ContextCompat.getColor(this, R.color.pink_500))
-            viewModel.support(comment.id)
+            viewModel.support(comment.id.toString())
         }
         if (comment.support) {
             binding.imgThumbUp.setColorFilter(ContextCompat.getColor(this, R.color.pink_500))

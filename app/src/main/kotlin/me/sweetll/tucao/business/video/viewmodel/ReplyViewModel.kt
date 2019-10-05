@@ -1,26 +1,18 @@
 package me.sweetll.tucao.business.video.viewmodel
 
-import android.content.Intent
-import android.databinding.ObservableField
-import android.os.Build
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.content.ContextCompat
 import android.view.View
 import com.squareup.moshi.JsonDataException
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import me.sweetll.tucao.Const
-import me.sweetll.tucao.R
 import me.sweetll.tucao.base.BaseViewModel
-import me.sweetll.tucao.business.login.LoginActivity
 import me.sweetll.tucao.business.video.ReplyActivity
 import me.sweetll.tucao.business.video.model.Reply
 import me.sweetll.tucao.di.service.ApiConfig
 import me.sweetll.tucao.extension.NonNullObservableField
 import me.sweetll.tucao.extension.sanitizeHtml
 import me.sweetll.tucao.extension.toast
-import me.sweetll.tucao.transition.FabTransform
 import org.jsoup.nodes.Document
 import java.text.SimpleDateFormat
 import java.util.*

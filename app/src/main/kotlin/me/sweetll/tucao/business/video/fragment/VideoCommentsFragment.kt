@@ -34,7 +34,9 @@ import me.sweetll.tucao.business.video.ReplyActivity
 import me.sweetll.tucao.business.video.adapter.CommentAdapter
 import me.sweetll.tucao.business.video.model.Comment
 import me.sweetll.tucao.databinding.FragmentVideoCommentsBinding
+import me.sweetll.tucao.di.service.NewApiService
 import me.sweetll.tucao.di.service.RawApiService
+import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.sanitizeHtml
 import me.sweetll.tucao.extension.toast
 import me.sweetll.tucao.model.other.User
@@ -46,7 +48,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class VideoCommentsFragment: BaseFragment() {
+class VideoCommentsFragment : BaseFragment() {
     lateinit var binding: FragmentVideoCommentsBinding
     lateinit var video: Video
 
@@ -54,8 +56,7 @@ class VideoCommentsFragment: BaseFragment() {
 
     var commentId = ""
 
-    var page = 1
-    val pageSize = 20
+    var page = 0
     var maxPage = 0
 
     var canInit = 0
@@ -66,6 +67,9 @@ class VideoCommentsFragment: BaseFragment() {
     @Inject
     lateinit var rawApiService: RawApiService
 
+    @Inject
+    lateinit var newApiService: NewApiService
+
     companion object {
         const val REQUEST_LOGIN = 1
     }
@@ -74,8 +78,8 @@ class VideoCommentsFragment: BaseFragment() {
         super.onCreate(savedInstanceState)
 
         AppApplication.get()
-                .getUserComponent()
-                .inject(this)
+            .getUserComponent()
+            .inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -101,45 +105,43 @@ class VideoCommentsFragment: BaseFragment() {
             return
         }
 
-        commentAdapter.setOnLoadMoreListener ({
+        commentAdapter.setOnLoadMoreListener({
             loadMoreData()
         }, binding.commentRecycler)
 
         binding.commentRecycler.layoutManager = LinearLayoutManager(context)
         binding.commentRecycler.adapter = commentAdapter
         binding.commentRecycler.addItemDecoration(
-                HorizontalDividerBuilder.newInstance(context!!)
-                        .setDivider(R.drawable.divider_small)
-                        .build()
+            HorizontalDividerBuilder.newInstance(context!!)
+                .setDivider(R.drawable.divider_small)
+                .build()
         )
 
-        commentAdapter.setOnItemClickListener{
-            _, view, position ->
+        commentAdapter.setOnItemClickListener { _, view, position ->
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity!!,
                 android.support.v4.util.Pair.create(view, "transition_background"),
                 android.support.v4.util.Pair.create(view, "transition_comment"))
             val comment = commentAdapter.getItem(position)!!
             ReplyActivity.intentTo(activity!!, commentId, comment, options.toBundle())
         }
-        commentAdapter.setOnItemChildClickListener {
-            adapter, view, position ->
+        commentAdapter.setOnItemChildClickListener { adapter, view, position ->
             if (view.id == R.id.linear_thumb_up) {
-                val comment = commentAdapter.getItem(position)!!
-                if (!comment.support) {
-                    comment.support = true
-                    comment.thumbUp += 1
-                    adapter.notifyItemChanged(position)
-                    rawApiService.support(commentId, comment.id)
-                            .sanitizeHtml {
-                                Object()
-                            }
-                            .subscribe({
-                                // Ignored
-                            }, {
-                                error ->
-                                error.printStackTrace()
-                            })
-                }
+                // TODO
+//                val comment = commentAdapter.getItem(position)!!
+//                if (!comment.support) {
+//                    comment.support = true
+//                    comment.likes += 1
+//                    adapter.notifyItemChanged(position)
+//                    rawApiService.support(commentId, comment.id)
+//                        .sanitizeHtml {
+//                            Object()
+//                        }
+//                        .subscribe({
+//                            // Ignored
+//                        }, { error ->
+//                            error.printStackTrace()
+//                        })
+//                }
             }
         }
         (binding.commentRecycler.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
@@ -160,7 +162,7 @@ class VideoCommentsFragment: BaseFragment() {
                 startFabTransform()
             } else {
                 val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        activity!!, binding.commentFab, "transition_login"
+                    activity!!, binding.commentFab, "transition_login"
                 ).toBundle()
                 val intent = Intent(activity, LoginActivity::class.java)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -171,53 +173,51 @@ class VideoCommentsFragment: BaseFragment() {
         }
 
         RxTextView.textChanges(binding.commentEdit)
-                .map { text -> text.isNotEmpty() }
-                .distinctUntilChanged()
-                .subscribe {
-                    enable ->
-                    binding.sendCommentBtn.isEnabled = enable
-                }
+            .map { text -> text.isNotEmpty() }
+            .distinctUntilChanged()
+            .subscribe { enable ->
+                binding.sendCommentBtn.isEnabled = enable
+            }
 
         binding.sendCommentBtn.setOnClickListener {
             binding.commentEdit.isEnabled = false
             binding.sendCommentBtn.isEnabled = false
             binding.sendCommentBtn.text = "发射中"
             val commentInfo = binding.commentEdit.text.toString()
-            val lastFloor: Int = commentAdapter.data.getOrNull(0)?.lch?.replace("[\\D]".toRegex(), "")?.toInt() ?: 0
-            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
-            val currentDateTime = sdf.format(Date())
-            commentAdapter.addData(0, Comment(user.avatar, "lv${user.level}", user.name, 0, "${lastFloor + 1}楼", currentDateTime, commentInfo, "", 0, false))
+            val lastFloor: Int = commentAdapter.data.getOrNull(0)?.lch?.replace("[\\D]".toRegex(), "")?.toInt()
+                ?: 0
+            val currentDateTime = System.currentTimeMillis()
+            commentAdapter.addData(0, Comment(user.avatar, "lv${user.level}", user.name,
+                0, "${lastFloor + 1}楼", currentDateTime, commentInfo, -1, 0, false))
             binding.commentRecycler.smoothScrollToPosition(0)
             rawApiService.sendComment(commentId, commentInfo)
-                    .bindToLifecycle(this)
-                    .sanitizeHtml {
-                        parseSendCommentResult(this)
+                .bindToLifecycle(this)
+                .sanitizeHtml {
+                    parseSendCommentResult(this)
+                }
+                .map { (code, msg) ->
+                    if (code == 0) {
+                        Object()
+                    } else {
+                        throw Error(msg)
                     }
-                    .map {
-                        (code, msg) ->
-                        if (code == 0) {
-                            Object()
-                        } else {
-                            throw Error(msg)
-                        }
-                    }
-                    .doAfterTerminate {
-                        binding.commentEdit.isEnabled = true
-                        binding.sendCommentBtn.isEnabled = true
-                        binding.sendCommentBtn.text = "发射"
-                    }
-                    .subscribe({
-                        // 成功
-                        binding.commentEdit.setText("")
-                        commentAdapter.data[0].hasSend = true
-                        commentAdapter.notifyItemChanged(0)
-                    }, {
-                        error ->
-                        // 失败
-                        commentAdapter.remove(0)
-                        error.printStackTrace()
-                        "发送失败，请检查网络".toast()
-                    })
+                }
+                .doAfterTerminate {
+                    binding.commentEdit.isEnabled = true
+                    binding.sendCommentBtn.isEnabled = true
+                    binding.sendCommentBtn.text = "发射"
+                }
+                .subscribe({
+                    // 成功
+                    binding.commentEdit.setText("")
+                    commentAdapter.data[0].hasSend = true
+                    commentAdapter.notifyItemChanged(0)
+                }, { error ->
+                    // 失败
+                    commentAdapter.remove(0)
+                    error.printStackTrace()
+                    "发送失败，请检查网络".toast()
+                })
         }
     }
 
@@ -241,14 +241,14 @@ class VideoCommentsFragment: BaseFragment() {
             binding.commentContainer.overlay.add(fabColor)
 
             val circularReveal = ViewAnimationUtils.createCircularReveal(
-                    binding.commentContainer, binding.commentContainer.width / 2, binding.commentContainer.height / 2,
-                    binding.commentFab.width / 2f, binding.commentContainer.width / 2f)
+                binding.commentContainer, binding.commentContainer.width / 2, binding.commentContainer.height / 2,
+                binding.commentFab.width / 2f, binding.commentContainer.width / 2f)
             val pathMotion = ArcMotion()
             circularReveal.interpolator = FastOutSlowInInterpolator()
             circularReveal.duration = 240
 
             val translate = ObjectAnimator.ofFloat(binding.commentContainer, View.TRANSLATION_X, View.TRANSLATION_Y,
-                    pathMotion.getPath((startBounds.centerX() - endBounds.centerX()).toFloat(), (startBounds.centerY() - endBounds.centerY()).toFloat(), 0f, 0f))
+                pathMotion.getPath((startBounds.centerX() - endBounds.centerX()).toFloat(), (startBounds.centerY() - endBounds.centerY()).toFloat(), 0f, 0f))
             translate.interpolator = LinearOutSlowInInterpolator()
             translate.duration = 240
 
@@ -276,42 +276,31 @@ class VideoCommentsFragment: BaseFragment() {
         if (!binding.swipeRefresh.isRefreshing) {
             binding.swipeRefresh.isRefreshing = true
         }
-        page = 1
-        rawApiService.comment(commentId, page)
-                .bindToLifecycle(this)
-                .sanitizeHtml {
-                    val comments = parseComments(this)
-                    maxPage = parseMaxPage(this)
-                    comments
+        page = 0
+        newApiService.videoComments(video.id, page)
+            .bindToLifecycle(this)
+            .apiResult()
+            .doAfterTerminate { binding.swipeRefresh.isRefreshing = false }
+            .subscribe({ comments ->
+                page++
+                commentAdapter.setNewData(comments)
+                if (comments.isEmpty()) {
+                    val emptyView = LayoutInflater.from(context).inflate(R.layout.layout_empty_comment, null)
+                    commentAdapter.emptyView = emptyView
                 }
-                .doAfterTerminate { binding.swipeRefresh.isRefreshing = false }
-                .subscribe({
-                    comments ->
-                    page++
-                    commentAdapter.setNewData(comments)
-                    if (comments.isEmpty()) {
-                        val emptyView = LayoutInflater.from(context).inflate(R.layout.layout_empty_comment, null)
-                        commentAdapter.emptyView = emptyView
-                    }
-                    if (page > maxPage) {
-                        commentAdapter.loadMoreEnd()
-                    }
-                }, {
-                    error ->
-                    error.printStackTrace()
-                    error.message?.toast()
-                })
+                commentAdapter.loadMoreEnd()
+            }, { error ->
+                error.printStackTrace()
+                error.message?.toast()
+            })
+
     }
 
-    fun loadMoreData() {
-        rawApiService.comment(commentId, page)
+    private fun loadMoreData() {
+        newApiService.videoComments(video.id, page)
             .bindToLifecycle(this)
-            .sanitizeHtml {
-                val comments = parseComments(this)
-                comments
-            }
-            .subscribe({
-                comments ->
+            .apiResult()
+            .subscribe({ comments ->
                 page++
                 commentAdapter.addData(comments)
                 if (page <= maxPage) {
@@ -319,11 +308,11 @@ class VideoCommentsFragment: BaseFragment() {
                 } else {
                     commentAdapter.loadMoreEnd()
                 }
-            }, {
-                error ->
+            }, { error ->
                 error.printStackTrace()
                 error.message?.toast()
             })
+
     }
 
     private fun parseSendCommentResult(doc: Document): Pair<Int, String> {
@@ -335,47 +324,4 @@ class VideoCommentsFragment: BaseFragment() {
         }
     }
 
-    private fun parseComments(doc: Document): List<Comment> {
-        val comments = mutableListOf<Comment>()
-
-        val comment_trs = doc.select("table.comment_list>tbody>tr")
-        for (index in 0..comment_trs.size / 2 - 1) {
-            val tr1 = comment_trs[2 * index]
-            val tr2 = comment_trs[2 * index + 1]
-
-            val td_user = tr1.child(0)
-
-            val avatar = td_user.child(0).child(0).attr("src")
-            val nickname = td_user.child(1).text()
-            val level = td_user.child(2).attr("class").substring(3)
-
-            val info = tr1.child(1).text()
-
-            val lch = tr2.select("em.lch").first().text()
-            val time = tr2.select("em.time").first().text()
-
-            val thumbUp = tr2.select("a.digg").first().child(0).text().toInt()
-
-            val commentId = tr2.select("a.digg>em").first().attr("id").substring(8)
-
-            val replyNum = tr2.select("div.replys").firstOrNull()?.attr("replys")?.toInt() ?: 0
-
-            val comment = Comment(avatar, level, nickname, thumbUp, lch, time, info, commentId, replyNum)
-            comments.add(comment)
-        }
-
-        return comments
-    }
-
-    private fun parseMaxPage(doc: Document): Int {
-        val pages = doc.select("div.pages").first()
-        if (pages == null) {
-            return 1
-        } else {
-            val a = pages.children()
-            val lastPageA = a[a.size - 2]
-            val maxPage = lastPageA.text().toInt()
-            return maxPage
-        }
-    }
 }

@@ -2,16 +2,19 @@ package me.sweetll.tucao.business.video.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-data class Comment(val avatar: String,
-                   val level: String,
-                   val nickname: String,
-                   var thumbUp: Int,
-                   val lch: String,
-                   val time: String,
-                   val info: String,
-                   val id: String,
-                   val replyNum: Int,
+@JsonClass(generateAdapter = true)
+data class Comment(@Json(name = "user_avatar")val avatar: String,
+                   val level: String = "LV233",
+                   @Json(name = "user_nickname")val nickname: String,
+                   @Json(name = "likes") var likes: Int,
+                   @Json(name = "order")val lch: String,
+                   @Json(name = "create_time")val time: Long,
+                   @Json(name = "content")val info: String,
+                   val id: Int,
+                   @Json(name = "reply_count")val replyNum: Int,
                    var hasSend: Boolean = true,
                    var support: Boolean = false) : Parcelable {
     constructor(source: Parcel) : this(
@@ -20,9 +23,9 @@ data class Comment(val avatar: String,
             source.readString(),
             source.readInt(),
             source.readString(),
+            source.readLong(),
             source.readString(),
-            source.readString(),
-            source.readString(),
+            source.readInt(),
             source.readInt(),
             1 == source.readInt(),
             1 == source.readInt()
@@ -34,11 +37,11 @@ data class Comment(val avatar: String,
         writeString(avatar)
         writeString(level)
         writeString(nickname)
-        writeInt(thumbUp)
+        writeInt(likes)
         writeString(lch)
-        writeString(time)
+        writeLong(time)
         writeString(info)
-        writeString(id)
+        writeInt(id)
         writeInt(replyNum)
         writeInt((if (hasSend) 1 else 0))
         writeInt((if (support) 1 else 0))

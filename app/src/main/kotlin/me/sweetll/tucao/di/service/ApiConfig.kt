@@ -90,6 +90,7 @@ object ApiConfig {
     const val RECOMMEND = "/api/v1/feed/recommend"
     const val VIDEO_DETAIL = "/api/v1/video/v{id}"
     const val VIDEO_DANMAKU = "/api/v1/video/v{id}/danmaku"
+    const val VIDEO_COMMENT = "/api/v1/video/v{id}/comments"
 
     const val USER_VIDEOS = "/api/v1/user/u{id}/videos"
 

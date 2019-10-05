@@ -1,6 +1,7 @@
 package me.sweetll.tucao.di.service
 
 import io.reactivex.Observable
+import me.sweetll.tucao.business.video.model.Comment
 import me.sweetll.tucao.model.json.*
 import okhttp3.ResponseBody
 import retrofit2.http.GET
@@ -21,5 +22,8 @@ interface NewApiService {
 
     @GET(ApiConfig.VIDEO_DANMAKU)
     fun videoDanmaku(@Path("id") vid: Int, @Query("part") partIndex: Int): Observable<ResponseBody>
+
+    @GET(ApiConfig.VIDEO_COMMENT)
+    fun videoComments(@Path("id") vid: Int, @Query("page") page: Int): Observable<NewBaseResp<List<Comment>>>
 
 }
