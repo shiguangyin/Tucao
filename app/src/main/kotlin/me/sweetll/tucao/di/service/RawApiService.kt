@@ -12,9 +12,6 @@ interface RawApiService {
     fun danmu(@Query("playerID") playerId: String,
               @Query("r") r: Long) : Observable<ResponseBody>
 
-    @GET(ApiConfig.INDEX_URL)
-    @Headers("Cookie: tucao_verify=ok")
-    fun index() : Observable<ResponseBody>
 
     @GET(ApiConfig.LIST_URL)
     @Headers("Cookie: tucao_verify=ok")
@@ -37,10 +34,6 @@ interface RawApiService {
                   @Field("mode") mode: Int = 1,
                   @Field("color") color: Int = 16777215): Observable<ResponseBody>
 
-    @GET(ApiConfig.COMMENT_URL)
-    @Headers("Cookie: tucao_verify=ok")
-    fun comment(@Query("commentid") commentId: String,
-                @Query("page") page: Int): Observable<ResponseBody>
 
     @FormUrlEncoded
     @POST(ApiConfig.SEND_COMMENT_URL)
@@ -76,9 +69,6 @@ interface RawApiService {
     fun personal(): Observable<ResponseBody>
 
 
-    @GET(ApiConfig.SPACE_URL)
-    fun space(@Query("uid") uid: String,
-              @Query("page") page: Int): Observable<ResponseBody>
 
     @GET(ApiConfig.SUPPORT_URL)
     fun support(@Query("commentid") commentId: String,

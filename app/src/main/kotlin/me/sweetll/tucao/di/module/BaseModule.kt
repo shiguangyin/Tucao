@@ -29,99 +29,98 @@ class BaseModule(val apiKey: String) {
     @Singleton
     @Named("raw")
     fun provideRawOkHttpClient(cookieJar: CookieJar): OkHttpClient = OkHttpClient.Builder()
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .writeTimeout(20, TimeUnit.SECONDS)
-            .cookieJar(cookieJar)
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .build()
+        .connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(20, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS)
+        .cookieJar(cookieJar)
+        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        .build()
 
     @Provides
     @Singleton
     @Named("json")
     fun provideJsonClient(cookieJar: CookieJar): OkHttpClient = OkHttpClient.Builder()
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .writeTimeout(20, TimeUnit.SECONDS)
-            .cookieJar(cookieJar)
-            .addInterceptor { chain ->
-                val url = chain.request().url()
-                        .newBuilder()
-                        .addQueryParameter("apikey", apiKey)
-                        .addQueryParameter("type", "json")
-                        .build()
-                val request = chain.request().newBuilder()
-                        .url(url)
-                        .build()
-                val response = chain.proceed(request)
-                response
-            }
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .build()
+        .connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(20, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS)
+        .cookieJar(cookieJar)
+        .addInterceptor { chain ->
+            val url = chain.request().url()
+                .newBuilder()
+                .addQueryParameter("apikey", apiKey)
+                .addQueryParameter("type", "json")
+                .build()
+            val request = chain.request().newBuilder()
+                .url(url)
+                .build()
+            val response = chain.proceed(request)
+            response
+        }
+        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        .build()
 
     @Provides
     @Singleton
     @Named("xml")
     fun provideXmlClient(cookieJar: CookieJar): OkHttpClient = OkHttpClient.Builder()
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .writeTimeout(20, TimeUnit.SECONDS)
-            .cookieJar(cookieJar)
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .build()
+        .connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(20, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS)
+        .cookieJar(cookieJar)
+        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        .build()
 
 
     @Provides
     @Singleton
     @Named("new")
     fun provideNewClient(cookieJar: CookieJar): OkHttpClient = OkHttpClient.Builder()
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .writeTimeout(20, TimeUnit.SECONDS)
-            .cookieJar(cookieJar)
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .build()
-
+        .connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(20, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS)
+        .cookieJar(cookieJar)
+        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        .build()
 
 
     @Provides
     @Singleton
     @Named("raw")
-    fun provideRawRetrofit(@Named("raw") client: OkHttpClient) : Retrofit = Retrofit.Builder()
-            .baseUrl(ApiConfig.BASE_RAW_API_URL)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .client(client)
-            .build()
+    fun provideRawRetrofit(@Named("raw") client: OkHttpClient): Retrofit = Retrofit.Builder()
+        .baseUrl(ApiConfig.BASE_RAW_API_URL)
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .client(client)
+        .build()
 
     @Provides
     @Singleton
     @Named("json")
-    fun provideJsonRetrofit(@Named("json") client: OkHttpClient) : Retrofit = Retrofit.Builder()
-            .baseUrl(ApiConfig.BASE_JSON_API_URL)
-            .addConverterFactory(MoshiConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .client(client)
-            .build()
+    fun provideJsonRetrofit(@Named("json") client: OkHttpClient): Retrofit = Retrofit.Builder()
+        .baseUrl(ApiConfig.BASE_JSON_API_URL)
+        .addConverterFactory(MoshiConverterFactory.create())
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .client(client)
+        .build()
 
     @Provides
     @Singleton
     @Named("xml")
-    fun provideXmlRetrofit(@Named("xml") client: OkHttpClient) : Retrofit = Retrofit.Builder()
-            .baseUrl(ApiConfig.BASE_XML_API_URL)
-            .addConverterFactory(SimpleXmlConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .client(client)
-            .build()
+    fun provideXmlRetrofit(@Named("xml") client: OkHttpClient): Retrofit = Retrofit.Builder()
+        .baseUrl(ApiConfig.BASE_XML_API_URL)
+        .addConverterFactory(SimpleXmlConverterFactory.create())
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .client(client)
+        .build()
 
 
     @Provides
     @Singleton
     @Named("new")
-    fun provideNewRetrofit(@Named("new") client: OkHttpClient) : Retrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .client(client)
-            .build()
+    fun provideNewRetrofit(@Named("new") client: OkHttpClient): Retrofit = Retrofit.Builder()
+        .baseUrl(BuildConfig.BASE_URL)
+        .addConverterFactory(MoshiConverterFactory.create())
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .client(client)
+        .build()
 
 }

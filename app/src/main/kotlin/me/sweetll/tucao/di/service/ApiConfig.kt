@@ -40,7 +40,6 @@ object ApiConfig {
     /*
      * Raw
      */
-    const val INDEX_URL        = "/"
     const val LIST_URL         = "list/{tid}/"
     const val BGM_URL          = "bgm/{year}/{month}/"
     const val SEND_DANMU_URL   = "index.php?m=danmakuCount&c=index&a=post"
@@ -57,8 +56,6 @@ object ApiConfig {
     const val LOGOUT_URL     = "index.php?m=member&c=index&a=logout&forward=&siteid=1"
     const val REGISTER_URL   = "index.php?m=member&c=index&a=register&siteid=1"
     const val PERSONAL_URL   = "index.php?m=member&c=index"
-    const val USER_URL       = "play/u{userid}/"
-    const val SPACE_URL      = "index.php?m=member&c=space"
     const val SUPPORT_URL    = "index.php?m=comment&c=index&a=support&format=json"
     const val SEND_REPLY_URL = "index.php?m=comment&c=index&a=post&replyuid=undefined"
 
@@ -93,6 +90,8 @@ object ApiConfig {
     const val VIDEO_COMMENT = "/api/v1/video/v{id}/comments"
 
     const val USER_VIDEOS = "/api/v1/user/u{id}/videos"
+    const val USER_CAPTCHA = "/api/v1/user/captcha"
+    const val USER_LOGIN = "/api/v1/user/login"
 
 
 }

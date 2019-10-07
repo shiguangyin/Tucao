@@ -3,10 +3,10 @@ package me.sweetll.tucao.di.service
 import io.reactivex.Observable
 import me.sweetll.tucao.business.video.model.Comment
 import me.sweetll.tucao.model.json.*
+import me.sweetll.tucao.model.other.User
 import okhttp3.ResponseBody
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
+import java.util.*
 
 
 interface NewApiService {
@@ -25,5 +25,13 @@ interface NewApiService {
 
     @GET(ApiConfig.VIDEO_COMMENT)
     fun videoComments(@Path("id") vid: Int, @Query("page") page: Int): Observable<NewBaseResp<List<Comment>>>
+
+    @GET(ApiConfig.USER_CAPTCHA)
+    fun getCaptcha(): Observable<NewBaseResp<String>>
+
+    @POST(ApiConfig.USER_LOGIN)
+    @FormUrlEncoded
+    fun login(@Field("username") username: String, @Field("password") password: String,
+              @Field("captcha")captcha: String): Observable<NewBaseResp<User>>
 
 }

@@ -1,26 +1,27 @@
 package me.sweetll.tucao.model.other
 
 import com.bumptech.glide.signature.ObjectKey
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import me.sweetll.tucao.extension.edit
 import me.sweetll.tucao.extension.getSharedPreference
 
-class User() {
+@JsonClass(generateAdapter = true)
+class User {
 
+    @Json(name="mail")
     var email: String = ""
-        set(value) { field = value;save() }
+    @Json(name="nickname")
     var name: String = ""
-        set(value) { field = value;save() }
+    @Json(name="avatar")
     var avatar: String = ""
-        set(value) { field = value;save() }
     var level: Int = 0
-        set(value) { field = value;save() }
+    @Json(name="biography")
     var signature: String = ""
-        set(value) { field = value;save() }
     var message: Int = 0
-        set(value) { field = value;save()}
 
-    fun isValid() = email.isNotEmpty()
+    fun isValid() = name.isNotEmpty()
 
     fun invalidate() {
         email = ""
@@ -32,7 +33,7 @@ class User() {
         save()
     }
 
-    private fun save() {
+    fun save() {
         val userJson = adapter.toJson(this)
         SP_USER.getSharedPreference().edit {
             putString(KEY_USER, userJson)
