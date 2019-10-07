@@ -19,9 +19,11 @@ import me.sweetll.tucao.di.service.ApiConfig
 import me.sweetll.tucao.extension.NonNullObservableField
 import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.toast
+import me.sweetll.tucao.model.other.User
 import me.sweetll.tucao.util.MD5Util
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import javax.inject.Inject
 
 class LoginViewModel(val activity: LoginActivity): BaseViewModel() {
 
@@ -33,24 +35,13 @@ class LoginViewModel(val activity: LoginActivity): BaseViewModel() {
     val container = NonNullObservableField(View.VISIBLE)
     val progress = NonNullObservableField(View.GONE)
 
+
     init {
         getCode()
     }
 
 
     private fun getCode() {
-//        rawApiService.checkCode()
-//                .bindToLifecycle(activity)
-//                .subscribeOn(Schedulers.io())
-//                .retryWhen(ApiConfig.RetryWithDelay())
-//                .subscribe({
-//                    body ->
-//                    this.codeBytes.set(body.bytes())
-//                }, {
-//                    error ->
-//                    error.printStackTrace()
-//                    error.message?.toast()
-//                })
         newApiService.getCaptcha()
             .bindToLifecycle(activity)
             .apiResult()
@@ -82,33 +73,6 @@ class LoginViewModel(val activity: LoginActivity): BaseViewModel() {
     @SuppressLint("CheckResult")
     fun onClickSignIn(view: View) {
         activity.showLoading()
-//        rawApiService.login_post(email.get(), password.get(), code.get())
-//                .bindToLifecycle(activity)
-//                .subscribeOn(Schedulers.io())
-//                .retryWhen(ApiConfig.RetryWithDelay())
-//                .map { parseLoginResult(Jsoup.parse(it.string())) }
-//                .flatMap {
-//                    (code, msg) ->
-//                    if (code == 0) {
-//                        rawApiService.personal()
-//                    } else {
-//                        Observable.error(Error(msg))
-//                    }
-//                }
-//                .map { parsePersonal(Jsoup.parse(it.string())) }
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .doAfterTerminate {
-//                    activity.showLogin()
-//                }
-//                .subscribe({
-//                    user.email = email.get()
-//                    activity.setResult(Activity.RESULT_OK)
-//                    activity.supportFinishAfterTransition()
-//                }, {
-//                    error ->
-//                    error.printStackTrace()
-//                    Snackbar.make(activity.binding.container, error.message ?: "登陆失败", Snackbar.LENGTH_SHORT).show()
-//                })
         val pwd = MD5Util.crypt(password.get())
         Log.i("LoginViewModel", "user = ${email.get()} pwd = $pwd")
         newApiService.login(email.get(), pwd, code.get())
@@ -117,11 +81,11 @@ class LoginViewModel(val activity: LoginActivity): BaseViewModel() {
             .doAfterTerminate{
                 activity.showLogin()
             }
-            .subscribe({ user ->
-                if (user.isValid()) {
+            .subscribe({ result ->
+                if (result.isValid()) {
                     activity.setResult(Activity.RESULT_OK)
                     activity.supportFinishAfterTransition()
-                    user.save()
+                    user.update(result)
                 } else {
                     error("invalid user")
                 }
@@ -135,43 +99,5 @@ class LoginViewModel(val activity: LoginActivity): BaseViewModel() {
     fun onClickForgotPassword(view: View) {
         ForgotPasswordActivity.intentTo(activity)
     }
-
-    fun parseLoginResult(doc: Document): Pair<Int, String>{
-        val content = doc.body().text()
-        return if ("成功" in content) {
-            Pair(0, "")
-        } else {
-            Pair(1, content)
-        }
-    }
-
-    private fun parsePersonal(doc: Document): Any {
-        // 获取等级
-        val lv_a = doc.select("a.lv")[0]
-        user.level = lv_a.text().substring(3).toInt()
-
-        // 获取用户名
-        val name_div = doc.select("a.name")[0]
-        user.name = name_div.text()
-
-        // 获取头像地址
-        val index_div = doc.select("div.index")[0]
-        val avatar_img = index_div.child(0).child(0)
-        user.avatar = avatar_img.attr("src")
-
-        // 获取签名
-        val index_table = doc.select("table.index_table")[0]
-        val signature_td = index_table.child(0).child(2).child(0)
-        user.signature = signature_td.text().removeSuffix(" 更新")
-
-        // 获取短消息
-        val message_td = index_table.child(0).child(0).child(3)
-        val message = message_td.child(0).child(0).text()
-        user.message = if (message == "--") 0 else message.toInt()
-
-        // 获取
-        return Object()
-    }
-
 
 }

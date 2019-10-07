@@ -7,9 +7,8 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.FragmentManager
 import android.support.v7.widget.Toolbar
-import android.transition.*
-import android.view.Menu
-import android.view.MenuItem
+import android.transition.ChangeBounds
+import android.transition.Fade
 import android.view.View
 import me.sweetll.tucao.R
 import me.sweetll.tucao.base.BaseActivity

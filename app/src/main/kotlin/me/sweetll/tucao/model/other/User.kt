@@ -40,6 +40,17 @@ class User {
         }
     }
 
+
+    fun update(user: User) {
+        email = user.email
+        name = user.name
+        avatar = user.avatar
+        level = user.level
+        signature = user.signature
+        message = user.message
+        save()
+    }
+
     companion object {
         private const val SP_USER = "user"
         private const val KEY_USER = "user"

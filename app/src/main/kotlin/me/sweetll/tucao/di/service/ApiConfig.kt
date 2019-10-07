@@ -92,6 +92,8 @@ object ApiConfig {
     const val USER_VIDEOS = "/api/v1/user/u{id}/videos"
     const val USER_CAPTCHA = "/api/v1/user/captcha"
     const val USER_LOGIN = "/api/v1/user/login"
+    const val USER_LOGOUT = "/api/v1/user/logout"
+    const val USER_AVATAR = "/api/v1/user/avatar"
 
 
 }

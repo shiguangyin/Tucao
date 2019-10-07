@@ -4,8 +4,11 @@ import io.reactivex.Observable
 import me.sweetll.tucao.business.video.model.Comment
 import me.sweetll.tucao.model.json.*
 import me.sweetll.tucao.model.other.User
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.http.*
+import retrofit2.http.Part
 import java.util.*
 
 
@@ -33,5 +36,12 @@ interface NewApiService {
     @FormUrlEncoded
     fun login(@Field("username") username: String, @Field("password") password: String,
               @Field("captcha")captcha: String): Observable<NewBaseResp<User>>
+
+    @GET(ApiConfig.USER_LOGOUT)
+    fun logout(): Observable<NewBaseResp<String>>
+
+    @POST(ApiConfig.USER_AVATAR)
+    @Multipart
+    fun updateAvatar(@Part body: MultipartBody.Part): Observable<NewBaseResp<String>>
 
 }
