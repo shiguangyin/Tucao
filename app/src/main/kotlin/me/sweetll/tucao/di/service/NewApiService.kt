@@ -35,7 +35,7 @@ interface NewApiService {
     @POST(ApiConfig.USER_LOGIN)
     @FormUrlEncoded
     fun login(@Field("username") username: String, @Field("password") password: String,
-              @Field("captcha")captcha: String): Observable<NewBaseResp<User>>
+              @Field("captcha") captcha: String): Observable<NewBaseResp<User>>
 
     @POST(ApiConfig.USER_REGISTER)
     @FormUrlEncoded
@@ -53,5 +53,13 @@ interface NewApiService {
     @PUT(ApiConfig.USER_ME)
     @FormUrlEncoded
     fun updateUserInfo(@Field("nickname") nickname: String, @Field("biography") biography: String): Observable<NewBaseResp<String>>
+
+    @PUT(ApiConfig.USER_UPDATE_PWD)
+    @FormUrlEncoded
+    fun updatePassword(@Field("password") password: String, @Field("new_password") newPassword: String): Observable<NewBaseResp<String>>
+
+    @POST(ApiConfig.User_RESET_PWD)
+    @FormUrlEncoded
+    fun resetPassword(@Field("mail") mail: String, @Field("captcha") captcha: String): Observable<NewBaseResp<String>>
 
 }

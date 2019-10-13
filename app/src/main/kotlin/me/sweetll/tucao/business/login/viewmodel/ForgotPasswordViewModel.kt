@@ -1,6 +1,7 @@
 package me.sweetll.tucao.business.login.viewmodel
 
 import android.databinding.ObservableField
+import android.util.Base64
 import android.view.View
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import io.reactivex.schedulers.Schedulers
@@ -8,11 +9,12 @@ import me.sweetll.tucao.base.BaseViewModel
 import me.sweetll.tucao.business.login.ForgotPasswordActivity
 import me.sweetll.tucao.di.service.ApiConfig
 import me.sweetll.tucao.extension.NonNullObservableField
+import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.sanitizeHtml
 import me.sweetll.tucao.extension.toast
 import org.jsoup.nodes.Document
 
-class ForgotPasswordViewModel(val activity: ForgotPasswordActivity): BaseViewModel() {
+class ForgotPasswordViewModel(val activity: ForgotPasswordActivity) : BaseViewModel() {
 
     val email = NonNullObservableField("")
     val code = NonNullObservableField("")
@@ -22,18 +24,18 @@ class ForgotPasswordViewModel(val activity: ForgotPasswordActivity): BaseViewMod
         checkCode()
     }
 
-    fun checkCode() {
-        rawApiService.checkCode()
-                .subscribeOn(Schedulers.io())
-                .retryWhen(ApiConfig.RetryWithDelay())
-                .subscribe({
-                    body ->
-                    codeBytes.set(body.bytes())
-                }, {
-                    error ->
-                    error.printStackTrace()
-                    error.message?.toast()
-                })
+    private fun checkCode() {
+        newApiService.getCaptcha()
+            .bindToLifecycle(activity)
+            .apiResult()
+            .retryWhen(ApiConfig.RetryWithDelay())
+            .subscribe({ data ->
+                val imageString = data.split(",")[1]
+                val imageData = Base64.decode(imageString, Base64.DEFAULT)
+                this.codeBytes.set(imageData)
+            }, { error ->
+                error.message?.toast()
+            })
     }
 
     fun onClickCode(view: View) {
@@ -51,25 +53,16 @@ class ForgotPasswordViewModel(val activity: ForgotPasswordActivity): BaseViewMod
             return
         }
 
-        rawApiService.forgotPassword(email.get(), code.get())
-                .bindToLifecycle(activity)
-                .sanitizeHtml { parseSubmitResult(this) }
-                .subscribe({
-                    activity.resetSuccess()
-                }, {
-                    error ->
-                    error.printStackTrace()
-                    activity.resetFailed(error.message ?: "重设密码失败")
-                })
+        newApiService.resetPassword(email.get(), code.get())
+            .bindToLifecycle(activity)
+            .apiResult()
+            .subscribe({
+                activity.resetSuccess()
+            }, { error ->
+                error.printStackTrace()
+                activity.resetFailed(error.message ?: "重设密码失败")
+            })
     }
 
-    fun parseSubmitResult(doc: Document): Pair<Int, String>{
-        val content = doc.body().text()
-        if ("成功" in content) {
-            return Pair(0, "")
-        } else {
-            return Pair(1, content)
-        }
-    }
 
 }

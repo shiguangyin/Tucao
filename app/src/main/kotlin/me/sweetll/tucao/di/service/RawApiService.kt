@@ -67,19 +67,6 @@ interface RawApiService {
 
 
     @FormUrlEncoded
-    @POST(ApiConfig.CHANGE_PASSWORD_URL)
-    fun changePassword(@Field("info[password]") oldPassword: String,
-                       @Field("info[newpassword]") newPassword: String,
-                       @Field("info[renewpassword]") renewPassword: String,
-                       @Field("dosubmit") dosubmit: String = "提交"): Observable<ResponseBody>
-
-    @FormUrlEncoded
-    @POST(ApiConfig.FORGOT_PASSWORD_URL)
-    fun forgotPassword(@Field("email") email: String,
-                       @Field("code") code: String,
-                       @Field("dosubmit") dosubmit: String = "重设"): Observable<ResponseBody>
-
-    @FormUrlEncoded
     @POST(ApiConfig.REGISTER_URL)
     fun register(@Field("username") username: String,
                  @Field("nickname") nickname: String,

@@ -40,24 +40,21 @@ object ApiConfig {
     /*
      * Raw
      */
-    const val LIST_URL         = "list/{tid}/"
-    const val BGM_URL          = "bgm/{year}/{month}/"
-    const val SEND_DANMU_URL   = "index.php?m=danmakuCount&c=index&a=post"
-    const val COMMENT_URL      = "index.php?m=comment&c=index&a=init&hot=0&iframe=1"
+    const val LIST_URL = "list/{tid}/"
+    const val BGM_URL = "bgm/{year}/{month}/"
+    const val SEND_DANMU_URL = "index.php?m=danmakuCount&c=index&a=post"
+    const val COMMENT_URL = "index.php?m=comment&c=index&a=init&hot=0&iframe=1"
     const val SEND_COMMENT_URL = "index.php?m=comment&c=index&a=post"
     const val READ_MESSAGE_LIST_URL = "index.php?m=message&c=index&a=inbox"
     const val READ_MESSAGE_DETAIL_URL = "index.php?m=message&c=index&a=read"
     const val REPLY_MESSAGE_URL = "index.php?m=message&c=index&a=reply"
     const val SEND_MESSAGE_URL = "index.php?m=message&c=index&a=send"
 
-    const val CODE_URL       = "api.php?op=checkcode&code_len=4&font_size=14&width=446&height=40"
-    const val REGISTER_URL   = "index.php?m=member&c=index&a=register&siteid=1"
-    const val PERSONAL_URL   = "index.php?m=member&c=index"
-    const val SUPPORT_URL    = "index.php?m=comment&c=index&a=support&format=json"
+    const val CODE_URL = "api.php?op=checkcode&code_len=4&font_size=14&width=446&height=40"
+    const val REGISTER_URL = "index.php?m=member&c=index&a=register&siteid=1"
+    const val PERSONAL_URL = "index.php?m=member&c=index"
+    const val SUPPORT_URL = "index.php?m=comment&c=index&a=support&format=json"
     const val SEND_REPLY_URL = "index.php?m=comment&c=index&a=post&replyuid=undefined"
-
-    const val CHANGE_PASSWORD_URL    = "index.php?m=member&c=index&a=account_manage_password&t=account"
-    const val FORGOT_PASSWORD_URL    = "index.php?m=member&c=index&a=public_forget_password&siteid=1"
 
     fun generatePlayerId(hid: String, part: Int) = "11-$hid-1-$part"
 
@@ -65,13 +62,13 @@ object ApiConfig {
         var retryCount = 0
 
         override fun apply(observable: Observable<in Throwable>): Observable<*> = observable
-                .flatMap { throwable ->
-                    if (++retryCount < maxRetries) {
-                        Observable.timer(delayMillis, TimeUnit.MILLISECONDS)
-                    } else {
-                        Observable.error(throwable as Throwable)
-                    }
+            .flatMap { throwable ->
+                if (++retryCount < maxRetries) {
+                    Observable.timer(delayMillis, TimeUnit.MILLISECONDS)
+                } else {
+                    Observable.error(throwable as Throwable)
                 }
+            }
     }
 
 
@@ -87,6 +84,8 @@ object ApiConfig {
     const val USER_REGISTER = "/api/v1/user/register"
     const val USER_AVATAR = "/api/v1/user/avatar"
     const val USER_ME = "/api/v1/user/me"
+    const val USER_UPDATE_PWD = "/api/v1/user/password"
+    const val User_RESET_PWD = "/api/v1/user/password/reset"
 
 
 }

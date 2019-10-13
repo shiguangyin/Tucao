@@ -6,11 +6,13 @@ import me.sweetll.tucao.base.BaseViewModel
 import me.sweetll.tucao.business.home.event.RefreshPersonalEvent
 import me.sweetll.tucao.business.personal.fragment.ChangePasswordFragment
 import me.sweetll.tucao.extension.NonNullObservableField
+import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.sanitizeHtml
+import me.sweetll.tucao.util.MD5Util
 import org.greenrobot.eventbus.EventBus
 import org.jsoup.nodes.Document
 
-class ChangePasswordViewModel(val fragment: ChangePasswordFragment): BaseViewModel() {
+class ChangePasswordViewModel(val fragment: ChangePasswordFragment) : BaseViewModel() {
     val oldPassword = NonNullObservableField("")
     val oldError = NonNullObservableField("")
     val newPassword = NonNullObservableField("")
@@ -50,30 +52,22 @@ class ChangePasswordViewModel(val fragment: ChangePasswordFragment): BaseViewMod
 
         if (hasError) return
 
-        rawApiService.changePassword(oldPassword.get(), newPassword.get(), renewPassword.get())
-                .bindToLifecycle(fragment)
-                .subscribeOn(Schedulers.io())
-                .sanitizeHtml { parseSaveResult(this) }
-                .map {
-                    (code, msg) ->
-                    if (code == 0) {
-                        Object()
-                    } else {
-                        throw Error(msg)
-                    }
-                }
-                .subscribe({
-                    user.invalidate()
-                    EventBus.getDefault().post(RefreshPersonalEvent())
-                    fragment.saveSuccess()
-                }, {
-                    error ->
-                    error.printStackTrace()
-                    fragment.saveFailed(error.message ?: "修改密码失败")
-                })
+        val pwd = MD5Util.crypt(oldPassword.get())
+        val newPwd = MD5Util.crypt(newPassword.get())
+        newApiService.updatePassword(pwd, newPwd)
+            .bindToLifecycle(fragment)
+            .apiResult()
+            .subscribe({
+                user.invalidate()
+                EventBus.getDefault().post(RefreshPersonalEvent())
+                fragment.saveSuccess()
+            }, { error ->
+                error.printStackTrace()
+                fragment.saveFailed(error.message ?: "修改密码失败")
+            })
     }
 
-    private fun parseSaveResult(doc: Document):Pair<Int, String>  {
+    private fun parseSaveResult(doc: Document): Pair<Int, String> {
         val result = doc.body().text()
         if ("成功" in result) {
             return Pair(0, "")
