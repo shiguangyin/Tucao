@@ -3,6 +3,7 @@ package me.sweetll.tucao.business.login.viewmodel
 import android.databinding.ObservableField
 import android.os.Handler
 import android.os.Message
+import android.util.Base64
 import android.util.Patterns
 import android.view.View
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
@@ -15,7 +16,9 @@ import me.sweetll.tucao.business.login.RegisterActivity
 import me.sweetll.tucao.di.service.ApiConfig
 import me.sweetll.tucao.extension.NonNullObservableField
 import me.sweetll.tucao.extension.Variable
+import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.toast
+import me.sweetll.tucao.util.MD5Util
 import org.greenrobot.eventbus.EventBus
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -74,25 +77,24 @@ class RegisterViewModel(val activity: RegisterActivity): BaseViewModel() {
         }
     }
 
-    val handler = TransitionHandler(this)
+    private val handler = TransitionHandler(this)
 
     init {
         checkCode()
     }
 
-    fun checkCode() {
-        rawApiService.checkCode()
-                .bindToLifecycle(activity)
-                .subscribeOn(Schedulers.io())
-                .retryWhen(ApiConfig.RetryWithDelay())
-                .subscribe({
-                    body ->
-                    codeBytes.set(body.bytes())
-                }, {
-                    error ->
-                    error.printStackTrace()
-                    error.message?.toast()
-                })
+    private fun checkCode() {
+        newApiService.getCaptcha()
+            .bindToLifecycle(activity)
+            .apiResult()
+            .retryWhen(ApiConfig.RetryWithDelay())
+            .subscribe({data ->
+                val imageString = data.split(",")[1]
+                val imageData = Base64.decode(imageString, Base64.DEFAULT)
+                this.codeBytes.set(imageData)
+            }, {error ->
+                error.message?.toast()
+            })
     }
 
     fun checkAccount() {
@@ -178,66 +180,13 @@ class RegisterViewModel(val activity: RegisterActivity): BaseViewModel() {
                 }
 
         handler.sendMessageDelayed(handler.obtainMessage(MESSAGE_TRANSITION), TRANSITION_DELAY)
-
-        rawApiService.checkUsername(account.get())
+        val pwd = MD5Util.crypt(newPassword.get())
+        newApiService.register(account.get(), nickname.get(), email.get(), pwd, code.get())
                 .bindToLifecycle(activity)
-                .subscribeOn(Schedulers.io())
-                .retryWhen(ApiConfig.RetryWithDelay())
-                .map {
-                    response ->
-                    parseCheckResult(Jsoup.parse(response.string()))
-                }
-                .flatMap {
-                    (c, _) ->
-                    if (c == 0) {
-                        rawApiService.checkNickname(nickname.get())
-                                .retryWhen(ApiConfig.RetryWithDelay())
-                    } else {
-                        throw Error("帐号已存在")
-                    }
-                }
-                .map {
-                    response ->
-                    parseCheckResult(Jsoup.parse(response.string()))
-                }
-                .flatMap {
-                    (c, _) ->
-                    if (c == 0) {
-                        rawApiService.checkEmail(email.get())
-                                .retryWhen(ApiConfig.RetryWithDelay())
-                    } else {
-                        throw Error("昵称已存在")
-                    }
-                }
-                .map {
-                    response ->
-                    parseCheckResult(Jsoup.parse(response.string()))
-                }
-                .flatMap {
-                    (c, _) ->
-                    if (c == 0) {
-                        rawApiService.register(account.get(), nickname.get(), email.get(), newPassword.get(), renewPassword.get(), code.get())
-                                .retryWhen(ApiConfig.RetryWithDelay())
-                    } else {
-                        throw Error("邮箱已存在")
-                    }
-                }
-                .map {
-                    response ->
-                    parseCreateResult(Jsoup.parse(response.string()))
-                }
-                .map {
-                    (code, msg) ->
-                    if (code == 0) {
-                        Object()
-                    } else {
-                        throw Error(msg)
-                    }
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    user.email = email.get()
-                    user.name = nickname.get()
+                .apiResult()
+                .subscribe({result ->
+                    user.email = result.email
+                    user.name = result.name
                     user.avatar = ""
                     user.level = 1
                     user.signature = ""
@@ -271,22 +220,5 @@ class RegisterViewModel(val activity: RegisterActivity): BaseViewModel() {
         activity.registerFailed(msg)
     }
 
-    private fun parseCheckResult(doc: Document): Pair<Int, String> {
-        val result = doc.body().text()
-        return if ("1" == result) {
-            Pair(0, "")
-        } else {
-            Pair(1, result)
-        }
-    }
-
-    private fun parseCreateResult(doc: Document):Pair<Int, String>  {
-        val result = doc.body().text()
-        return if ("成功" in result) {
-            Pair(0, "")
-        } else {
-            Pair(1, result)
-        }
-    }
 
 }

@@ -50,23 +50,14 @@ object ApiConfig {
     const val REPLY_MESSAGE_URL = "index.php?m=message&c=index&a=reply"
     const val SEND_MESSAGE_URL = "index.php?m=message&c=index&a=send"
 
-    const val USER_INFO_URL  = "api.php?op=user"
     const val CODE_URL       = "api.php?op=checkcode&code_len=4&font_size=14&width=446&height=40"
-    const val LOGIN_URL      = "index.php?m=member&c=index&a=login"
-    const val LOGOUT_URL     = "index.php?m=member&c=index&a=logout&forward=&siteid=1"
     const val REGISTER_URL   = "index.php?m=member&c=index&a=register&siteid=1"
     const val PERSONAL_URL   = "index.php?m=member&c=index"
     const val SUPPORT_URL    = "index.php?m=comment&c=index&a=support&format=json"
     const val SEND_REPLY_URL = "index.php?m=comment&c=index&a=post&replyuid=undefined"
 
-    const val CHANGE_INFORMATION_URL = "index.php?m=member&c=index&a=account_manage_info&t=account"
     const val CHANGE_PASSWORD_URL    = "index.php?m=member&c=index&a=account_manage_password&t=account"
     const val FORGOT_PASSWORD_URL    = "index.php?m=member&c=index&a=public_forget_password&siteid=1"
-    const val CHECK_USERNAME_URL     = "index.php?clientid=username&m=member&c=index&a=public_checkname_ajax"
-    const val CHECK_NICKNAME_URL     = "index.php?clientid=nickname&m=member&c=index&a=public_checknickname_ajax"
-    const val CHECK_EMAIL_URL        = "index.php?clientid=email&m=member&c=index&a=public_checkemail_ajax"
-    const val MANAGE_AVATAR_URL      = "index.php?m=member&c=index&a=account_manage_avatar&t=account"
-    const val UPLOAD_AVATAR_URL      = "phpsso_server/index.php?m=phpsso&c=index&a=uploadavatar&auth_data=v=1&appid=1"
 
     fun generatePlayerId(hid: String, part: Int) = "11-$hid-1-$part"
 
@@ -93,7 +84,9 @@ object ApiConfig {
     const val USER_CAPTCHA = "/api/v1/user/captcha"
     const val USER_LOGIN = "/api/v1/user/login"
     const val USER_LOGOUT = "/api/v1/user/logout"
+    const val USER_REGISTER = "/api/v1/user/register"
     const val USER_AVATAR = "/api/v1/user/avatar"
+    const val USER_ME = "/api/v1/user/me"
 
 
 }

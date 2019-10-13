@@ -44,25 +44,10 @@ interface RawApiService {
     @Streaming
     fun download(@Url url: String): Observable<Response<ResponseBody>>
 
-    @GET(ApiConfig.USER_INFO_URL)
-    fun userInfo(@Query("_") r: Long = System.currentTimeMillis() / 1000): Observable<ResponseBody>
 
     @GET(ApiConfig.CODE_URL)
     fun checkCode(): Observable<ResponseBody>
 
-    @GET(ApiConfig.LOGIN_URL)
-    fun login_get(): Observable<ResponseBody>
-
-    @FormUrlEncoded
-    @POST(ApiConfig.LOGIN_URL)
-    fun login_post(@Field("username") username: String,
-                   @Field("password") password: String,
-                   @Field("code") code: String,
-                   @Field("cookietime") cookietime: Int = 31536000,
-                   @Field("dosubmit") dosubmit: String = "登录"): Observable<ResponseBody>
-
-    @GET(ApiConfig.LOGOUT_URL)
-    fun logout(): Observable<ResponseBody>
 
 
     @GET(ApiConfig.PERSONAL_URL)
@@ -80,11 +65,6 @@ interface RawApiService {
                   @Query("id") id: String,
                   @Field("content") content: String): Observable<ResponseBody>
 
-    @FormUrlEncoded
-    @POST(ApiConfig.CHANGE_INFORMATION_URL)
-    fun changeInformation(@Field("nickname") nickname: String,
-                          @Field("info[qianming]") signature: String,
-                          @Field("dosubmit") dosubmit: String = "提交"): Observable<ResponseBody>
 
     @FormUrlEncoded
     @POST(ApiConfig.CHANGE_PASSWORD_URL)
@@ -109,20 +89,6 @@ interface RawApiService {
                  @Field("code") code: String,
                  @Field("dosubmit") dosubmit: String = "注册"): Observable<ResponseBody>
 
-    @GET(ApiConfig.CHECK_USERNAME_URL)
-    fun checkUsername(@Query("username") username: String): Observable<ResponseBody>
-
-    @GET(ApiConfig.CHECK_NICKNAME_URL)
-    fun checkNickname(@Query("nickname") nickname: String): Observable<ResponseBody>
-
-    @GET(ApiConfig.CHECK_EMAIL_URL)
-    fun checkEmail(@Query("email") email: String): Observable<ResponseBody>
-
-    @GET(ApiConfig.MANAGE_AVATAR_URL)
-    fun manageAvatar(): Observable<ResponseBody>
-
-    @POST(ApiConfig.UPLOAD_AVATAR_URL)
-    fun uploadAvatar(@Query("data") data: String, @Body body: RequestBody): Observable<ResponseBody>
 
     @GET(ApiConfig.READ_MESSAGE_LIST_URL)
     fun readMessageList(): Observable<ResponseBody>

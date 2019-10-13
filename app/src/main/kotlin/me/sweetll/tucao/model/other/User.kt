@@ -10,6 +10,9 @@ import me.sweetll.tucao.extension.getSharedPreference
 @JsonClass(generateAdapter = true)
 class User {
 
+    @Json(name="id")
+    var id: Int = 0
+
     @Json(name="mail")
     var email: String = ""
     @Json(name="nickname")

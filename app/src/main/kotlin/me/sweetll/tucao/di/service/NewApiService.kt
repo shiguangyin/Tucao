@@ -37,11 +37,21 @@ interface NewApiService {
     fun login(@Field("username") username: String, @Field("password") password: String,
               @Field("captcha")captcha: String): Observable<NewBaseResp<User>>
 
+    @POST(ApiConfig.USER_REGISTER)
+    @FormUrlEncoded
+    fun register(@Field("username") username: String, @Field("nickname") nickname: String,
+                 @Field("mail") mail: String, @Field("password") password: String,
+                 @Field("captcha") captcha: String): Observable<NewBaseResp<User>>
+
     @GET(ApiConfig.USER_LOGOUT)
     fun logout(): Observable<NewBaseResp<String>>
 
     @POST(ApiConfig.USER_AVATAR)
     @Multipart
     fun updateAvatar(@Part body: MultipartBody.Part): Observable<NewBaseResp<String>>
+
+    @PUT(ApiConfig.USER_ME)
+    @FormUrlEncoded
+    fun updateUserInfo(@Field("nickname") nickname: String, @Field("biography") biography: String): Observable<NewBaseResp<String>>
 
 }

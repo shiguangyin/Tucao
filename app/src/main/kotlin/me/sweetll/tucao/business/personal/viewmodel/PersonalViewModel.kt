@@ -21,7 +21,7 @@ import java.io.File
 class PersonalViewModel(val activity: PersonalActivity, val fragment: PersonalFragment) : BaseViewModel() {
     val avatar = ObservableField<String>(user.avatar)
     val nickname = ObservableField<String>(user.name)
-    val uuid = ObservableField<String>()
+    val uuid = ObservableField<String>(user.id.toString())
     val signature = ObservableField<String>(user.signature)
 
     fun refresh() {
@@ -32,6 +32,7 @@ class PersonalViewModel(val activity: PersonalActivity, val fragment: PersonalFr
         avatar.set(user.avatar)
         nickname.set(user.name)
         signature.set(user.signature)
+        uuid.set(user.id.toString())
     }
 
     fun uploadAvatar(image: TImage) {

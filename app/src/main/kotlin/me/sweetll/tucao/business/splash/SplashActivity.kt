@@ -32,11 +32,6 @@ class SplashActivity : AppCompatActivity() {
             return
         }
 
-        // Just to fetch cookie
-        rawApiService.userInfo()
-                .retryWhen(ApiConfig.RetryWithDelay())
-                .subscribeOn(Schedulers.io())
-                .subscribe({}, {})
 
         Handler().postDelayed({
             val intent = Intent(this, MainActivity::class.java)

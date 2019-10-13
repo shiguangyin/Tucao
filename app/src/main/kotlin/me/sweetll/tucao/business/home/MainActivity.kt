@@ -105,7 +105,6 @@ class MainActivity : BaseActivity() {
 
     lateinit var updateDialog: DialogPlus
 
-    lateinit var logoutDialog: DialogPlus
 
     lateinit var downloadUrl: String
 
@@ -142,35 +141,6 @@ class MainActivity : BaseActivity() {
                 }
                 .create()
 
-        val logoutView = LayoutInflater.from(this).inflate(R.layout.dialog_logout, null)
-        logoutDialog = DialogPlus.newDialog(this)
-                .setContentHolder(ViewHolder(logoutView))
-                .setGravity(Gravity.BOTTOM)
-                .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
-                .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                .setContentBackgroundResource(android.R.color.transparent)
-                .setOverlayBackgroundResource(R.color.scrim)
-                .setOnClickListener {
-                    dialog, view ->
-                    when (view.id) {
-                        R.id.btn_logout -> {
-                            rawApiService.logout()
-                                    .bindToLifecycle(this)
-                                    .sanitizeHtml {
-                                        Object()
-                                    }
-                                    .subscribe({
-
-                                    }, {
-
-                                    })
-                            user.invalidate()
-                            doRefresh()
-                            dialog.dismiss()
-                        }
-                    }
-                }
-                .create()
     }
 
     override fun initView(savedInstanceState: Bundle?) {
@@ -217,9 +187,6 @@ class MainActivity : BaseActivity() {
         checkUpdate(true)
     }
 
-    override fun initToolbar() {
-        super.initToolbar()
-    }
 
     fun setupDrawer() {
         binding.navigation.setNavigationItemSelectedListener {
