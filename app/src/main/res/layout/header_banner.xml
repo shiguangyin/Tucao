@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.bigkoo.convenientbanner.ConvenientBanner
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/banner"
+<LinearLayout android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="150dp" />
+    android:layout_height="wrap_content"
+    android:paddingBottom="25dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <com.bigkoo.convenientbanner.ConvenientBanner
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        />
+
+    <ImageView
+        android:id="@+id/img_rank"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/bg_rank"
+        android:visibility="gone"
+        tools:visibility="gone" />
+</LinearLayout>

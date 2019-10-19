@@ -15,7 +15,7 @@ import java.util.*
 interface NewApiService {
 
     @GET(ApiConfig.RECOMMEND)
-    fun index(): Observable<NewBaseResp<RecommendResult>>
+    fun videoRecommend(@Query("page") page: Int): Observable<NewBaseResp<VideoList>>
 
     @GET(ApiConfig.VIDEO_DETAIL)
     fun videoDetail(@Path("id") id: Int): Observable<NewBaseResp<Video>>

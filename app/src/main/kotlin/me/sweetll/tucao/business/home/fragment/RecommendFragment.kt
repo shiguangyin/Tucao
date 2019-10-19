@@ -2,12 +2,15 @@ package me.sweetll.tucao.business.home.fragment
 
 import android.annotation.TargetApi
 import android.databinding.DataBindingUtil
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.support.transition.TransitionManager
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.util.Pair
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.transition.ArcMotion
 import android.transition.ChangeBounds
 import android.view.LayoutInflater
@@ -22,10 +25,13 @@ import me.sweetll.tucao.base.BaseFragment
 import me.sweetll.tucao.business.channel.ChannelDetailActivity
 import me.sweetll.tucao.business.home.adapter.BannerHolder
 import me.sweetll.tucao.business.home.adapter.RecommendAdapter
+import me.sweetll.tucao.business.home.adapter.VideoListAdapter
 import me.sweetll.tucao.business.home.viewmodel.RecommendViewModel
 import me.sweetll.tucao.business.video.VideoActivity
 import me.sweetll.tucao.databinding.FragmentRecommendBinding
+import me.sweetll.tucao.extension.dp
 import me.sweetll.tucao.extension.logD
+import me.sweetll.tucao.model.json.VideoList
 import me.sweetll.tucao.model.raw.Banner
 import me.sweetll.tucao.model.raw.Index
 
@@ -34,7 +40,7 @@ class RecommendFragment : BaseFragment() {
     private lateinit var headerView: ConvenientBanner<Banner>
     private val viewModel = RecommendViewModel(this)
 
-    private val recommendAdapter = RecommendAdapter(null)
+    private val recommendAdapter = VideoListAdapter(emptyList())
 
     private var isLoad = false
 
@@ -61,31 +67,40 @@ class RecommendFragment : BaseFragment() {
         setupRecyclerView()
         loadWhenNeed()
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             initTransition()
         }
     }
 
     fun setupRecyclerView() {
-        headerView = LayoutInflater.from(activity)
-            .inflate(R.layout.header_banner, binding.root as ViewGroup, false) as ConvenientBanner<Banner>
-        recommendAdapter.addHeaderView(headerView)
+        val header = LayoutInflater.from(activity)
+            .inflate(R.layout.header_banner, binding.root as ViewGroup, false)
+        headerView = header.findViewById(R.id.banner)
+        recommendAdapter.addHeaderView(header)
 
-        binding.recommendRecycler.layoutManager = LinearLayoutManager(activity)
+        binding.recommendRecycler.layoutManager = GridLayoutManager(activity, 2)
+        binding.recommendRecycler.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
+                val pos = parent.getChildAdapterPosition(view) - recommendAdapter.headerLayoutCount
+                if (pos < 0) return
+                outRect.bottom = 8.dp
+                outRect.left = 8.dp
+                if (pos % 2 > 0) {
+                    outRect.right = 8.dp
+                }
+            }
+        })
         binding.recommendRecycler.adapter = recommendAdapter
 
         // Item子控件点击
         binding.recommendRecycler.addOnItemTouchListener(object: OnItemChildClickListener() {
             override fun onSimpleItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
                 when (view.id) {
-                    R.id.img_rank -> {
-                        viewModel.onClickRank(view)
-                    }
-                    R.id.card_more -> {
-                        ChannelDetailActivity.intentTo(activity!!, view.tag as Int)
-                    }
-                    R.id.card1, R.id.card2, R.id.card3, R.id.card4 -> {
-                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    R.id.img_rank -> {
+//                        viewModel.onClickRank(view)
+//                    }
+                    R.id.card -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             val coverImg = (((view as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0)
                             val titleText = (view.getChildAt(0) as ViewGroup).getChildAt(1)
                             val p1: Pair<View, String> = Pair.create(coverImg, "cover")
@@ -125,7 +140,9 @@ class RecommendFragment : BaseFragment() {
         }
     }
 
-    fun loadIndex(index: Index) {
+
+
+    fun loadVideoList(videoList: VideoList) {
         if (!isLoad) {
             isLoad = true
             TransitionManager.beginDelayedTransition(binding.swipeRefresh)
@@ -137,12 +154,11 @@ class RecommendFragment : BaseFragment() {
             binding.recommendRecycler.visibility = View.VISIBLE
         }
 
-        headerView.setPages({ BannerHolder() }, index.banners)
-                .setPageIndicator(intArrayOf(R.drawable.indicator_white_circle, R.drawable.indicator_pink_circle))
-                .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
-                .startTurning(3000)
-
-        recommendAdapter.setNewData(index.recommends)
+        headerView.setPages({ BannerHolder() }, videoList.banners)
+            .setPageIndicator(intArrayOf(R.drawable.indicator_white_circle, R.drawable.indicator_pink_circle))
+            .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
+            .startTurning(3000)
+        recommendAdapter.setNewData(videoList.videos)
     }
 
     fun loadError() {

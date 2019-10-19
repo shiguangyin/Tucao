@@ -18,7 +18,7 @@ object ApiConfig {
     const val SEARCH_API_URL = "search.php"
     const val VIEW_API_URL = "view.php"
     const val RANK_API_URL = "rank.php"
-    const val REPLY_API_URL = "http://www.tucao.one/index.php?m=comment&c=index&a=ajax"
+    const val REPLY_API_URL = "http://www.tucao.one/videoRecommend.php?m=comment&c=videoRecommend&a=ajax"
 
     const val UPDATE_API_URL = "http://45.63.54.11:12450/api/app-portal/version"
 
@@ -35,23 +35,23 @@ object ApiConfig {
      * XML
      */
     const val PLAY_URL_API_URL = "http://api.tucao.one/api/playurl"
-    const val DANMU_API_URL = "http://www.tucao.one/index.php?m=danmakuCount&c=index&a=init"
+    const val DANMU_API_URL = "http://www.tucao.one/videoRecommend.php?m=danmakuCount&c=videoRecommend&a=init"
 
     /*
      * Raw
      */
     const val LIST_URL = "list/{tid}/"
     const val BGM_URL = "bgm/{year}/{month}/"
-    const val SEND_DANMU_URL = "index.php?m=danmakuCount&c=index&a=post"
-    const val COMMENT_URL = "index.php?m=comment&c=index&a=init&hot=0&iframe=1"
-    const val SEND_COMMENT_URL = "index.php?m=comment&c=index&a=post"
-    const val READ_MESSAGE_LIST_URL = "index.php?m=message&c=index&a=inbox"
-    const val READ_MESSAGE_DETAIL_URL = "index.php?m=message&c=index&a=read"
-    const val REPLY_MESSAGE_URL = "index.php?m=message&c=index&a=reply"
-    const val SEND_MESSAGE_URL = "index.php?m=message&c=index&a=send"
+    const val SEND_DANMU_URL = "videoRecommend.php?m=danmakuCount&c=videoRecommend&a=post"
+    const val COMMENT_URL = "videoRecommend.php?m=comment&c=videoRecommend&a=init&hot=0&iframe=1"
+    const val SEND_COMMENT_URL = "videoRecommend.php?m=comment&c=videoRecommend&a=post"
+    const val READ_MESSAGE_LIST_URL = "videoRecommend.php?m=message&c=videoRecommend&a=inbox"
+    const val READ_MESSAGE_DETAIL_URL = "videoRecommend.php?m=message&c=videoRecommend&a=read"
+    const val REPLY_MESSAGE_URL = "videoRecommend.php?m=message&c=videoRecommend&a=reply"
+    const val SEND_MESSAGE_URL = "videoRecommend.php?m=message&c=videoRecommend&a=send"
 
-    const val SUPPORT_URL = "index.php?m=comment&c=index&a=support&format=json"
-    const val SEND_REPLY_URL = "index.php?m=comment&c=index&a=post&replyuid=undefined"
+    const val SUPPORT_URL = "videoRecommend.php?m=comment&c=videoRecommend&a=support&format=json"
+    const val SEND_REPLY_URL = "videoRecommend.php?m=comment&c=videoRecommend&a=post&replyuid=undefined"
 
     fun generatePlayerId(hid: String, part: Int) = "11-$hid-1-$part"
 
@@ -69,7 +69,7 @@ object ApiConfig {
     }
 
 
-    const val RECOMMEND = "/api/v1/feed/recommend"
+    const val RECOMMEND = "/api/v1/video/recommend"
     const val VIDEO_DETAIL = "/api/v1/video/v{id}"
     const val VIDEO_DANMAKU = "/api/v1/video/v{id}/danmaku"
     const val VIDEO_COMMENT = "/api/v1/video/v{id}/comments"
