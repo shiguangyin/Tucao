@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="me.sweetll.tucao.business.home.viewmodel.MovieViewModel" />
+            type="me.sweetll.tucao.business.home.viewmodel.VideoListViewModel" />
     </data>
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -20,7 +20,7 @@
             android:layout_height="match_parent">
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/movieRecycler"
+                android:id="@+id/bangumiRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
@@ -45,7 +45,6 @@
                 app:borderWidth="3dp"
                 app:circleSpacing="4dp"
                 app:indicatorColor="@color/pink_300"/>
-
         </FrameLayout>
 
     </android.support.v4.widget.SwipeRefreshLayout>

@@ -24,23 +24,6 @@ class RecommendViewModel(val fragment: RecommendFragment) : BaseViewModel() {
 
     fun loadData() {
         fragment.setRefreshing(true)
-//        rawApiService.index()
-//                .bindToLifecycle(fragment)
-//                .sanitizeHtml({
-//                    val banners = parseBanners(this)
-//                    val recommends = parseRecommends(this)
-//                    Index(banners, recommends)
-//                })
-//                .doAfterTerminate { fragment.setRefreshing(false) }
-//                .subscribe({
-//                    index ->
-//                    fragment.loadIndex(index)
-//                }, {
-//                    error ->
-//                    error.printStackTrace()
-//                    error.message?.toast()
-//                    fragment.loadError()
-//                })
         newApiService.index().bindToLifecycle(fragment)
             .apiResult()
             .doAfterTerminate { fragment.setRefreshing(false) }

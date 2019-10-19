@@ -3,18 +3,18 @@ package me.sweetll.tucao.business.home.viewmodel
 import android.view.View
 import me.sweetll.tucao.base.BaseViewModel
 import me.sweetll.tucao.business.channel.ChannelDetailActivity
-import me.sweetll.tucao.business.home.fragment.BangumiFragment
+import me.sweetll.tucao.business.home.fragment.VideoListFragment
 import me.sweetll.tucao.business.showtimes.ShowtimeActivity
 import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.toast
 import me.sweetll.tucao.model.json.Category
 
-class BangumiViewModel(val fragment: BangumiFragment): BaseViewModel() {
+class VideoListViewModel(val fragment: VideoListFragment, private val category: Int): BaseViewModel() {
 
 
     fun loadData() {
         fragment.setRefreshing(true)
-        newApiService.getVideoList(19, 0, 10)
+        newApiService.getVideoList(category, 0, 10)
             .apiResult()
             .doAfterTerminate{fragment.setRefreshing(false)}
             .subscribe({videoList ->

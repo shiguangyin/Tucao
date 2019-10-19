@@ -2,42 +2,48 @@ package me.sweetll.tucao.business.home.fragment
 
 import android.annotation.TargetApi
 import android.databinding.DataBindingUtil
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.support.transition.TransitionManager
 import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.app.Fragment
 import android.support.v4.util.Pair
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.transition.ArcMotion
 import android.transition.ChangeBounds
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bigkoo.convenientbanner.ConvenientBanner
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemChildClickListener
 import me.sweetll.tucao.R
 import me.sweetll.tucao.base.BaseFragment
 import me.sweetll.tucao.business.channel.ChannelDetailActivity
-import me.sweetll.tucao.business.home.adapter.GameAdapter
-import me.sweetll.tucao.business.home.viewmodel.GameViewModel
+import me.sweetll.tucao.business.home.adapter.BannerHolder
+import me.sweetll.tucao.business.home.adapter.CategoryAdapter
+import me.sweetll.tucao.business.home.adapter.VideoListAdapter
+import me.sweetll.tucao.business.home.viewmodel.VideoListViewModel
 import me.sweetll.tucao.business.video.VideoActivity
-import me.sweetll.tucao.databinding.FragmentGameBinding
-import me.sweetll.tucao.databinding.HeaderGameBinding
-import me.sweetll.tucao.extension.logD
-import me.sweetll.tucao.model.raw.Game
+import me.sweetll.tucao.databinding.FragmentVideoListBinding
+import me.sweetll.tucao.databinding.HeaderVideoListBinding
+import me.sweetll.tucao.extension.dp
+import me.sweetll.tucao.model.json.VideoList
 
-class GameFragment : BaseFragment() {
-    lateinit var binding: FragmentGameBinding
+class VideoListFragment(category: Int) : BaseFragment() {
+    lateinit var binding: FragmentVideoListBinding
+    private lateinit var headerBinding: HeaderVideoListBinding
 
-    val viewModel = GameViewModel(this)
+    val viewModel = VideoListViewModel(this, category)
 
-    val gameAdapter = GameAdapter(null)
+    private val videoListAdapter = VideoListAdapter(emptyList())
+    private val categoryAdapter = CategoryAdapter(emptyList())
 
-    var isLoad = false
+    private var isLoad = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_game, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_video_list, container, false)
         binding.viewModel = viewModel
         binding.loading.show()
         return binding.root
@@ -59,27 +65,59 @@ class GameFragment : BaseFragment() {
         setupRecyclerView()
         loadWhenNeed()
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             initTransition()
         }
     }
 
     fun setupRecyclerView() {
-        val headerBinding: HeaderGameBinding = DataBindingUtil.inflate(LayoutInflater.from(activity), R.layout.header_game, binding.root as ViewGroup, false)
+        headerBinding = DataBindingUtil.inflate(LayoutInflater.from(activity), R.layout.header_video_list, binding.root as ViewGroup, false)
         headerBinding.viewModel = viewModel
-        gameAdapter.addHeaderView(headerBinding.root)
+        headerBinding.recyclerView.adapter = categoryAdapter
+        headerBinding.recyclerView.layoutManager = GridLayoutManager(activity, 3)
+        headerBinding.recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
 
-        binding.gameRecycler.layoutManager = LinearLayoutManager(activity)
-        binding.gameRecycler.adapter = gameAdapter
+            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
+                val pos = parent.getChildAdapterPosition(view)
+                if (pos % 3 > 0) {
+                    outRect.left = 0.5f.dp.toInt()
+                }
+                if (pos / 3 > 0) {
+                    outRect.top = 0.5f.dp.toInt()
+                }
+            }
 
-        binding.gameRecycler.addOnItemTouchListener(object: OnItemChildClickListener() {
+        })
+        headerBinding.recyclerView.addOnItemTouchListener(object : OnItemChildClickListener() {
+            override fun onSimpleItemChildClick(adapter: BaseQuickAdapter<*, *>?, view: View, position: Int) {
+                val cateId = categoryAdapter.data[position]?.id ?: return
+                val activity = activity?: return
+                if (cateId > 0) {
+                    ChannelDetailActivity.intentTo(activity, cateId)
+                }
+            }
+
+        })
+        videoListAdapter.addHeaderView(headerBinding.root)
+
+        binding.bangumiRecycler.layoutManager = GridLayoutManager(activity, 2)
+        binding.bangumiRecycler.adapter = videoListAdapter
+        binding.bangumiRecycler.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
+                val pos = parent.getChildAdapterPosition(view) - videoListAdapter.headerLayoutCount
+                if (pos < 0) return
+                outRect.bottom = 8.dp
+                outRect.left = 8.dp
+                if (pos % 2 > 0) {
+                    outRect.right = 8.dp
+                }
+            }
+        })
+        binding.bangumiRecycler.addOnItemTouchListener(object: OnItemChildClickListener() {
             override fun onSimpleItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
                 when (view.id) {
-                    R.id.card_more -> {
-                        ChannelDetailActivity.intentTo(activity!!, view.tag as Int)
-                    }
-                    R.id.card1, R.id.card2, R.id.card3, R.id.card4 -> {
-                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    R.id.card -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             val coverImg = (((view as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0)
                             val titleText = (view.getChildAt(0) as ViewGroup).getChildAt(1)
                             val p1: Pair<View, String> = Pair.create(coverImg, "cover")
@@ -87,12 +125,13 @@ class GameFragment : BaseFragment() {
                             val cover = titleText.tag as String
                             val options = ActivityOptionsCompat
                                     .makeSceneTransitionAnimation(activity!!, p1, p2)
-                            VideoActivity.intentTo(activity!!, view.tag as String, cover, options.toBundle())
+                            VideoActivity.intentTo(activity!!, view.tag as Int, cover, options.toBundle())
                         } else {
-                            VideoActivity.intentTo(activity!!, view.tag as String)
+                            VideoActivity.intentTo(activity!!, view.tag as Int)
                         }
                     }
                 }
+
             }
         })
     }
@@ -119,7 +158,9 @@ class GameFragment : BaseFragment() {
         }
     }
 
-    fun loadGame(game: Game) {
+
+
+    fun loadVideoList(videoList: VideoList) {
         if (!isLoad) {
             isLoad = true
             TransitionManager.beginDelayedTransition(binding.swipeRefresh)
@@ -128,10 +169,14 @@ class GameFragment : BaseFragment() {
             if (binding.errorStub.isInflated) {
                 binding.errorStub.root.visibility = View.GONE
             }
-            binding.gameRecycler.visibility = View.VISIBLE
+            binding.bangumiRecycler.visibility = View.VISIBLE
         }
-
-        gameAdapter.setNewData(game.recommends)
+        videoListAdapter.setNewData(videoList.videos)
+        categoryAdapter.setNewData(videoList.categories)
+        headerBinding.banner.setPages({ BannerHolder() }, videoList.banners)
+            .setPageIndicator(intArrayOf(R.drawable.indicator_white_circle, R.drawable.indicator_pink_circle))
+            .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT)
+            .startTurning(3000)
     }
 
     fun loadError() {
