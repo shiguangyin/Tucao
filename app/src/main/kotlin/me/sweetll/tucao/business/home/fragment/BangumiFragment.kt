@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.support.transition.TransitionManager
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.util.Pair
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.GridLayoutManager
 import android.transition.ArcMotion
 import android.transition.ChangeBounds
 import android.view.LayoutInflater
@@ -18,25 +18,26 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemChildClickListener
 import me.sweetll.tucao.R
 import me.sweetll.tucao.base.BaseFragment
-import me.sweetll.tucao.business.channel.ChannelDetailActivity
-import me.sweetll.tucao.business.home.adapter.BangumiAdapter
 import me.sweetll.tucao.business.home.adapter.BannerHolder
+import me.sweetll.tucao.business.home.adapter.CategoryAdapter
+import me.sweetll.tucao.business.home.adapter.VideoListAdapter
 import me.sweetll.tucao.business.home.viewmodel.BangumiViewModel
 import me.sweetll.tucao.business.video.VideoActivity
 import me.sweetll.tucao.databinding.FragmentBangumiBinding
 import me.sweetll.tucao.databinding.HeaderBangumiBinding
-import me.sweetll.tucao.model.raw.Bangumi
-import me.sweetll.tucao.model.raw.Banner
+import me.sweetll.tucao.extension.logD
+import me.sweetll.tucao.model.json.VideoList
 
 class BangumiFragment : BaseFragment() {
     lateinit var binding: FragmentBangumiBinding
-    lateinit var headerBinding: HeaderBangumiBinding
+    private lateinit var headerBinding: HeaderBangumiBinding
 
     val viewModel = BangumiViewModel(this)
 
-    val bangumiAdapter = BangumiAdapter(null)
+    private val videoListAdapter = VideoListAdapter(emptyList())
+    private val categoryAdapter = CategoryAdapter(emptyList())
 
-    var isLoad = false
+    private var isLoad = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_bangumi, container, false)
@@ -61,7 +62,7 @@ class BangumiFragment : BaseFragment() {
         setupRecyclerView()
         loadWhenNeed()
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             initTransition()
         }
     }
@@ -69,19 +70,24 @@ class BangumiFragment : BaseFragment() {
     fun setupRecyclerView() {
         headerBinding = DataBindingUtil.inflate(LayoutInflater.from(activity), R.layout.header_bangumi, binding.root as ViewGroup, false)
         headerBinding.viewModel = viewModel
-        bangumiAdapter.addHeaderView(headerBinding.root)
+        headerBinding.recyclerView.adapter = categoryAdapter
+        headerBinding.recyclerView.layoutManager = GridLayoutManager(activity, 3)
+        headerBinding.recyclerView.addOnItemTouchListener(object : OnItemChildClickListener() {
+            override fun onSimpleItemChildClick(adapter: BaseQuickAdapter<*, *>?, view: View, position: Int) {
+                "$position click ".logD("Test")
+            }
 
-        binding.bangumiRecycler.layoutManager = LinearLayoutManager(activity)
-        binding.bangumiRecycler.adapter = bangumiAdapter
+        })
+        videoListAdapter.addHeaderView(headerBinding.root)
+
+        binding.bangumiRecycler.layoutManager = GridLayoutManager(activity, 2)
+        binding.bangumiRecycler.adapter = videoListAdapter
 
         binding.bangumiRecycler.addOnItemTouchListener(object: OnItemChildClickListener() {
             override fun onSimpleItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
                 when (view.id) {
-                    R.id.card_more -> {
-                        ChannelDetailActivity.intentTo(activity!!, view.tag as Int)
-                    }
-                    R.id.card1, R.id.card2, R.id.card3, R.id.card4 -> {
-                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    R.id.card -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             val coverImg = (((view as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0) as ViewGroup).getChildAt(0)
                             val titleText = (view.getChildAt(0) as ViewGroup).getChildAt(1)
                             val p1: Pair<View, String> = Pair.create(coverImg, "cover")
@@ -89,9 +95,9 @@ class BangumiFragment : BaseFragment() {
                             val cover = titleText.tag as String
                             val options = ActivityOptionsCompat
                                     .makeSceneTransitionAnimation(activity!!, p1, p2)
-                            VideoActivity.intentTo(activity!!, view.tag as String, cover, options.toBundle())
+                            VideoActivity.intentTo(activity!!, view.tag as Int, cover, options.toBundle())
                         } else {
-                            VideoActivity.intentTo(activity!!, view.tag as String)
+                            VideoActivity.intentTo(activity!!, view.tag as Int)
                         }
                     }
                 }
@@ -122,7 +128,9 @@ class BangumiFragment : BaseFragment() {
         }
     }
 
-    fun loadBangumi(bangumi: Bangumi) {
+
+
+    fun loadVideoList(videoList: VideoList) {
         if (!isLoad) {
             isLoad = true
             TransitionManager.beginDelayedTransition(binding.swipeRefresh)
@@ -133,12 +141,12 @@ class BangumiFragment : BaseFragment() {
             }
             binding.bangumiRecycler.visibility = View.VISIBLE
         }
-
-        bangumiAdapter.setNewData(bangumi.recommends)
-        headerBinding.banner.setPages({ BannerHolder() }, bangumi.banners)
-                .setPageIndicator(intArrayOf(R.drawable.indicator_white_circle, R.drawable.indicator_pink_circle))
-                .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT)
-                .startTurning(3000)
+        videoListAdapter.setNewData(videoList.videos)
+        categoryAdapter.setNewData(videoList.categories)
+        headerBinding.banner.setPages({ BannerHolder() }, videoList.banners)
+            .setPageIndicator(intArrayOf(R.drawable.indicator_white_circle, R.drawable.indicator_pink_circle))
+            .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT)
+            .startTurning(3000)
     }
 
     fun loadError() {

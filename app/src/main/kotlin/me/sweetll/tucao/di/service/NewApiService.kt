@@ -62,4 +62,9 @@ interface NewApiService {
     @FormUrlEncoded
     fun resetPassword(@Field("mail") mail: String, @Field("captcha") captcha: String): Observable<NewBaseResp<String>>
 
+
+    @GET(ApiConfig.VIDEO_LIST)
+    fun getVideoList(@Query("category") cateId: Int, @Query("page") page: Int,
+                     @Query("size") size: Int): Observable<NewBaseResp<VideoList>>
+
 }

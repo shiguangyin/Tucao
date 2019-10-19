@@ -50,9 +50,6 @@ object ApiConfig {
     const val REPLY_MESSAGE_URL = "index.php?m=message&c=index&a=reply"
     const val SEND_MESSAGE_URL = "index.php?m=message&c=index&a=send"
 
-    const val CODE_URL = "api.php?op=checkcode&code_len=4&font_size=14&width=446&height=40"
-    const val REGISTER_URL = "index.php?m=member&c=index&a=register&siteid=1"
-    const val PERSONAL_URL = "index.php?m=member&c=index"
     const val SUPPORT_URL = "index.php?m=comment&c=index&a=support&format=json"
     const val SEND_REPLY_URL = "index.php?m=comment&c=index&a=post&replyuid=undefined"
 
@@ -76,6 +73,7 @@ object ApiConfig {
     const val VIDEO_DETAIL = "/api/v1/video/v{id}"
     const val VIDEO_DANMAKU = "/api/v1/video/v{id}/danmaku"
     const val VIDEO_COMMENT = "/api/v1/video/v{id}/comments"
+    const val VIDEO_LIST = "/api/v1/video/list"
 
     const val USER_VIDEOS = "/api/v1/user/u{id}/videos"
     const val USER_CAPTCHA = "/api/v1/user/captcha"
@@ -85,7 +83,7 @@ object ApiConfig {
     const val USER_AVATAR = "/api/v1/user/avatar"
     const val USER_ME = "/api/v1/user/me"
     const val USER_UPDATE_PWD = "/api/v1/user/password"
-    const val User_RESET_PWD = "/api/v1/user/password/reset"
+    const val User_RESET_PWD = "/api/v1/user/password/forget"
 
 
 }

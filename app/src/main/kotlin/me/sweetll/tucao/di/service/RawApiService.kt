@@ -45,14 +45,6 @@ interface RawApiService {
     fun download(@Url url: String): Observable<Response<ResponseBody>>
 
 
-    @GET(ApiConfig.CODE_URL)
-    fun checkCode(): Observable<ResponseBody>
-
-
-
-    @GET(ApiConfig.PERSONAL_URL)
-    fun personal(): Observable<ResponseBody>
-
 
 
     @GET(ApiConfig.SUPPORT_URL)
@@ -64,17 +56,6 @@ interface RawApiService {
     fun sendReply(@Query("commentid") commentId: String,
                   @Query("id") id: String,
                   @Field("content") content: String): Observable<ResponseBody>
-
-
-    @FormUrlEncoded
-    @POST(ApiConfig.REGISTER_URL)
-    fun register(@Field("username") username: String,
-                 @Field("nickname") nickname: String,
-                 @Field("email") email: String,
-                 @Field("password") password: String,
-                 @Field("pwdconfirm") pwdconfirm: String,
-                 @Field("code") code: String,
-                 @Field("dosubmit") dosubmit: String = "注册"): Observable<ResponseBody>
 
 
     @GET(ApiConfig.READ_MESSAGE_LIST_URL)
