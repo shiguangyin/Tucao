@@ -4,7 +4,6 @@ import android.view.View
 import me.sweetll.tucao.base.BaseViewModel
 import me.sweetll.tucao.business.channel.ChannelDetailActivity
 import me.sweetll.tucao.business.home.fragment.VideoListFragment
-import me.sweetll.tucao.business.showtimes.ShowtimeActivity
 import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.toast
 import me.sweetll.tucao.model.json.Category
@@ -34,15 +33,5 @@ class VideoListViewModel(val fragment: VideoListFragment, private val category: 
                 err.message?.toast()
                 fragment.loadError()
             })
-    }
-
-
-
-    fun onClickChannel(view: View) {
-        ChannelDetailActivity.intentTo(fragment.activity!!, (view.tag as String).toInt())
-    }
-
-    fun onClickShowtime(view: View) {
-        ShowtimeActivity.intentTo(fragment.activity!!)
     }
 }
