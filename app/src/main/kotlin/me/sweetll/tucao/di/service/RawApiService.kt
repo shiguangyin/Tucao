@@ -13,19 +13,6 @@ interface RawApiService {
               @Query("r") r: Long) : Observable<ResponseBody>
 
     @FormUrlEncoded
-    @POST(ApiConfig.SEND_DANMU_URL)
-    @Headers("Cookie: tucao_verify=ok")
-    fun sendDanmu(@Query("playerID") playerId: String,
-                  @Field("cid") cid: String,
-                  @Field("stime") stime: Float,
-                  @Field("message") message: String,
-                  @Field("user") user: String = "test",
-                  @Field("size") size: Long = 25,
-                  @Field("mode") mode: Int = 1,
-                  @Field("color") color: Int = 16777215): Observable<ResponseBody>
-
-
-    @FormUrlEncoded
     @POST(ApiConfig.SEND_COMMENT_URL)
     fun sendComment(@Query("commentid") commentId: String,
                     @Field("content") content: String): Observable<ResponseBody>

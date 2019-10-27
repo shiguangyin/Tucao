@@ -67,4 +67,11 @@ interface NewApiService {
     fun getVideoList(@Query("category") cateId: Int, @Query("page") page: Int,
                      @Query("size") size: Int): Observable<NewBaseResp<VideoList>>
 
+
+    @POST(ApiConfig.VIDEO_DANMAKU)
+    @FormUrlEncoded
+    fun postDanmaku(@Path("id") vid: Int, @Field("part") part: Int,
+                    @Field("time") time: Float, @Field("text") text: String,
+                    @Field("font_size") size: Long = 25, @Field("color") color: Int = 16777215): Observable<NewBaseResp<String>>
+
 }

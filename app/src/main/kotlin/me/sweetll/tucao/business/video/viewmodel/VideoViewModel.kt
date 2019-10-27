@@ -23,7 +23,8 @@ class VideoViewModel(val activity: VideoActivity) : BaseViewModel() {
     var playUrlDisposable: Disposable? = null
     var danmuDisposable: Disposable? = null
 
-    var currentPlayerId: String? = null
+    var selectedPart = 0
+
 
     constructor(activity: VideoActivity, video: Video) : this(activity) {
         this.video.set(video)
@@ -50,7 +51,7 @@ class VideoViewModel(val activity: VideoActivity) : BaseViewModel() {
             .subscribe({ video ->
                 this.video.set(video)
                 activity.loadVideo(video)
-            }, {error ->
+            }, { error ->
                 error.printStackTrace()
                 activity.binding.player.loadText?.let {
                     it.text = it.text.replace("获取视频信息...".toRegex(), "获取视频信息...[失败]")
@@ -121,7 +122,7 @@ class VideoViewModel(val activity: VideoActivity) : BaseViewModel() {
         danmuDisposable = newApiService.videoDanmaku(videoId, part.order)
             .bindToLifecycle(activity)
             .subscribeOn(Schedulers.io())
-            .map {responseBody ->
+            .map { responseBody ->
                 val outputFile = File.createTempFile("temp_danmaku", ".json", AppApplication.get().cacheDir)
                 val outputStream = FileOutputStream(outputFile)
 
@@ -133,7 +134,7 @@ class VideoViewModel(val activity: VideoActivity) : BaseViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ uri ->
                 activity.loadDanmaku(uri)
-            },{error ->
+            }, { error ->
                 error.printStackTrace()
                 activity.binding.player.loadText?.let {
                     it.text = it.text.replace("全舰弹幕装填...".toRegex(), "全舰弹幕装填...[失败]")
@@ -141,15 +142,15 @@ class VideoViewModel(val activity: VideoActivity) : BaseViewModel() {
             })
     }
 
-    fun sendDanmu(stime: Float, message: String) {
-        currentPlayerId?.let {
-            rawApiService.sendDanmu(it, it, stime, message)
-                .bindToLifecycle(activity)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    // 发送成功
-                }, Throwable::printStackTrace)
-        }
+    fun sendDanmaku(time: Float, message: String) {
+        val v = video.get() ?: return
+        newApiService.postDanmaku(v.id, selectedPart, time, message)
+            .bindToLifecycle(activity)
+            .apiResult()
+            .subscribe({
+                // success
+                "success".logD("VideoViewModel")
+            }, Throwable::printStackTrace)
+
     }
 }

@@ -16,7 +16,6 @@ import android.support.design.widget.AppBarLayout
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.support.v7.widget.Toolbar
-import android.text.format.DateFormat
 import android.transition.*
 import android.view.Gravity
 import android.view.View
@@ -364,6 +363,7 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
         }
         if (selectedPart.vid.isNotEmpty()) {
             viewModel.queryPlayUrls(video.id, video.hid, selectedPart)
+            viewModel.selectedPart = selectedPart.order
         } else {
             "所选视频已失效".toast()
         }
@@ -406,7 +406,7 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
     }
 
     override fun onSendDanmu(stime: Float, message: String) {
-        viewModel.sendDanmu(stime, message)
+        viewModel.sendDanmaku(stime, message)
     }
 
     override fun onSavePlayHistory(position: Int) {
