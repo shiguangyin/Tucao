@@ -12,14 +12,7 @@ import okhttp3.ResponseBody
 import retrofit2.http.*
 
 interface JsonApiService {
-    @GET(ApiConfig.VIEW_API_URL)
-    fun view(@Query("hid") hid: String): Observable<BaseResponse<Video>>
 
-    @GET(ApiConfig.LIST_API_URL)
-    fun list(@Query("tid") tid: Int,
-             @Query("page") pageIndex: Int,
-             @Query("pagesize") pageSize: Int,
-             @Query("order") order: String?): Observable<ListResponse<Video>>
 
     @GET(ApiConfig.SEARCH_API_URL)
     fun search(@Query("tid") tid: Int?,
@@ -28,13 +21,6 @@ interface JsonApiService {
                @Query("order") order: String?,
                @Query("q") keyword: String): Observable<ListResponse<Video>>
 
-    @GET(ApiConfig.RANK_API_URL)
-    fun rank(@Query("tid") tid: Int,
-             @Query("date") date: Int): Observable<BaseResponse<Map<Int, Video>>>
-
-    @GET
-    @Headers("user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36")
-    fun clicli(@Url url: String): Observable<Clicli>
 
     @GET(ApiConfig.UPDATE_API_URL)
     fun update(@Query("appKey") appKey: String,

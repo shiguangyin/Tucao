@@ -1,10 +1,8 @@
 package me.sweetll.tucao.business.home.viewmodel
 
-import android.view.View
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import me.sweetll.tucao.base.BaseViewModel
 import me.sweetll.tucao.business.home.fragment.RecommendFragment
-import me.sweetll.tucao.business.rank.RankActivity
 import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.toast
 
@@ -24,10 +22,4 @@ class RecommendViewModel(val fragment: RecommendFragment) : BaseViewModel() {
             })
 
     }
-
-
-    fun onClickRank(view: View) {
-        RankActivity.intentTo(fragment.activity!!)
-    }
-
 }

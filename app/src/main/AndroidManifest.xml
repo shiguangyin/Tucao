@@ -74,13 +74,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Translucent.Search" />
         <activity
-            android:name=".business.rank.RankActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".business.browser.BrowserActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".business.showtimes.ShowtimeActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".business.home.PlayHistoryActivity"

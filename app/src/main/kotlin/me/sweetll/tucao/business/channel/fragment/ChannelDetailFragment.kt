@@ -22,6 +22,8 @@ import me.sweetll.tucao.model.json.Video
 import me.sweetll.tucao.business.video.VideoActivity
 import me.sweetll.tucao.databinding.FragmentChannelDetailBinding
 import me.sweetll.tucao.di.service.JsonApiService
+import me.sweetll.tucao.di.service.NewApiService
+import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.sanitizeJsonList
 import me.sweetll.tucao.extension.toast
 import org.greenrobot.eventbus.EventBus
@@ -34,13 +36,16 @@ class ChannelDetailFragment : BaseFragment() {
 
     val videoAdapter = VideoAdapter(null)
 
-    var pageIndex = 1
+    var pageIndex = 0
     val pageSize = 10
 
     var order = "date"
 
     @Inject
     lateinit var jsonApiService: JsonApiService
+
+    @Inject
+    lateinit var  newApiService: NewApiService
 
     companion object {
         private val ARG_TID = "tid"
@@ -76,7 +81,7 @@ class ChannelDetailFragment : BaseFragment() {
         binding.videoRecycler.addOnItemTouchListener(object : OnItemClickListener() {
             override fun onSimpleItemClick(helper: BaseQuickAdapter<*, *>, itemView: View, position: Int) {
                 val video: Video = videoAdapter.getItem(position)!!
-                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     val coverImg = itemView.findViewById<ImageView>(R.id.img_thumb)
                     val titleText = itemView.findViewById<View>(R.id.text_title)
                     val p1: Pair<View, String> = Pair.create(coverImg, "cover")
@@ -109,54 +114,47 @@ class ChannelDetailFragment : BaseFragment() {
         EventBus.getDefault().unregister(this)
     }
 
-    fun loadData() {
+    private fun loadData() {
         if (!binding.swipeRefresh.isRefreshing) {
             binding.swipeRefresh.isRefreshing = true
         }
-        pageIndex = 1
-        jsonApiService.list(tid, pageIndex, pageSize, order)
-                .bindToLifecycle(this)
-                .sanitizeJsonList()
-                .doAfterTerminate { binding.swipeRefresh.isRefreshing = false }
-                .map({
-                    jsonList ->
-                    jsonList.result!!
-                })
-                .subscribe({
-                    data ->
-                    pageIndex++
-                    videoAdapter.setNewData(data)
-                }, {
-                    error ->
-                    error.message?.toast()
-                })
+        pageIndex = 0
+        newApiService.getVideoList(tid, pageIndex, pageSize, order)
+            .bindToLifecycle(this)
+            .apiResult()
+            .doAfterTerminate { binding.swipeRefresh.isRefreshing = false }
+            .subscribe({
+                data ->
+                pageIndex++
+                videoAdapter.setNewData(data.videos)
+            }, {
+                error ->
+                error.message?.toast()
+            })
     }
 
-    fun loadMoreData() {
-        jsonApiService.list(tid, pageIndex, pageSize, order)
-                .bindToLifecycle(this)
-                .sanitizeJsonList()
-                .map({
-                    jsonList ->
-                    jsonList.result!!
-                })
-                .subscribe({
-                    data ->
-                    pageIndex++
-                    videoAdapter.addData(data)
-                    if (data.size < pageSize) {
-                        videoAdapter.loadMoreEnd()
-                    } else {
-                        videoAdapter.loadMoreComplete()
-                    }
-                }, {
-                    error ->
-                    error.message?.toast()
-                    videoAdapter.loadMoreFail()
-                })
+    private fun loadMoreData() {
+        newApiService.getVideoList(tid, pageIndex, pageSize, order)
+            .bindToLifecycle(this)
+            .apiResult()
+            .doAfterTerminate { binding.swipeRefresh.isRefreshing = false }
+            .subscribe({
+                data ->
+                pageIndex++
+                videoAdapter.addData(data.videos)
+                if (data.videos.size < pageSize) {
+                    videoAdapter.loadMoreEnd()
+                } else {
+                    videoAdapter.loadMoreComplete()
+                }
+            }, {
+                error ->
+                error.message?.toast()
+                videoAdapter.loadMoreFail()
+            })
     }
 
-    @Subscribe()
+    @Subscribe
     fun onChangeChannelFilterEvent(event: ChangeChannelFilterEvent) {
         if (order != event.order) {
             order = event.order

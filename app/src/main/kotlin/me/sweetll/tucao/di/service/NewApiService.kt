@@ -65,7 +65,8 @@ interface NewApiService {
 
     @GET(ApiConfig.VIDEO_LIST)
     fun getVideoList(@Query("category") cateId: Int, @Query("page") page: Int,
-                     @Query("size") size: Int): Observable<NewBaseResp<VideoList>>
+                     @Query("size") size: Int, @Query("order") order: String = "date",
+                     @Query("with_banner") withBanner: Int = 0): Observable<NewBaseResp<VideoList>>
 
 
     @POST(ApiConfig.VIDEO_DANMAKU)

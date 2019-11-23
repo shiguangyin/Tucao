@@ -1,8 +1,6 @@
 package me.sweetll.tucao.business.home.viewmodel
 
-import android.view.View
 import me.sweetll.tucao.base.BaseViewModel
-import me.sweetll.tucao.business.channel.ChannelDetailActivity
 import me.sweetll.tucao.business.home.fragment.VideoListFragment
 import me.sweetll.tucao.extension.apiResult
 import me.sweetll.tucao.extension.toast
@@ -13,7 +11,7 @@ class VideoListViewModel(val fragment: VideoListFragment, private val category: 
 
     fun loadData() {
         fragment.setRefreshing(true)
-        newApiService.getVideoList(category, 0, 10)
+        newApiService.getVideoList(category, 0, 10, withBanner = 1)
             .apiResult()
             .doAfterTerminate{fragment.setRefreshing(false)}
             .subscribe({videoList ->

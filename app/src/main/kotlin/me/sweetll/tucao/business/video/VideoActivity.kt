@@ -109,7 +109,6 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
 
     override fun initView(savedInstanceState: Bundle?) {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_video)
-        val hid = intent.getStringExtra(ARG_HID)
         val cover = intent.getStringExtra(ARG_COVER)
         val id = intent.getIntExtra(ARG_ID, 0)
 
@@ -117,11 +116,7 @@ class VideoActivity : BaseActivity(), DanmuVideoPlayer.DanmuPlayerHolder {
         binding.viewPager.adapter = videoPagerAdapter
         binding.viewPager.offscreenPageLimit = 3
         binding.tab.setupWithViewPager(binding.viewPager)
-
-        if (hid != null) {
-            viewModel = VideoViewModel(this)
-            viewModel.queryVideo(hid)
-        } else if (id != 0) {
+        if (id != 0) {
             viewModel = VideoViewModel(this)
             viewModel.queryVideo(id)
         } else {
