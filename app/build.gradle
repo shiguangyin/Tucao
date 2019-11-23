@@ -80,8 +80,7 @@ dependencies {
         exclude group: 'com.google.code.findbugs'
     })
     testImplementation 'junit:junit:4.12'
-    /* DialogPlus */
-    implementation project(':dialogplus')
+    implementation 'com.orhanobut:dialogplus:1.11@aar'
     /* GSYVideoPlayer */
     implementation project(':gsyVideoPlayer')
     /* TakePhoto */
